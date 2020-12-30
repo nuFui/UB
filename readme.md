@@ -1,5 +1,10 @@
 # UB
 
-11th implementation of U-lang.
+Implementation of U lang.
 
-## HERE WE GO AGAIN
+Based on: https://github.com/davidcallanan/py-myopl-code
+
+## Milestones
+
+1. Create a lexer [done]
+2. Create a parser

@@ -6,7 +6,9 @@
 #include "lex_helper.h"
 #include "tok.h"
 
-typedef struct LexPosition
+#define APPEND_EOF 1
+
+typedef struct LexerPosition
 {
   uint32_t index;   // Index of current with respect to text.
   uint32_t line;    // Line number
@@ -15,9 +17,9 @@ typedef struct LexPosition
 } lexer_pos_t;
 
 extern void lex_pos_advance(lexer_pos_t *lex_pos, char *cur);
-extern lexer_pos_t lex_pos_copy(lexer_pos_t *lex_pos);
+extern void lex_pos_copy(lexer_pos_t *dest, lexer_pos_t *src);
 
-typedef struct Lex
+typedef struct Lexer
 {
   char *cur;       // Cursor or current character in analysis.
   lexer_pos_t pos; // Information about position when performing lexical analysis.
@@ -29,6 +31,6 @@ extern lexer_t lex_create(const char *path);
 extern void lex_destroy(lexer_t *lex);
 extern void lex_advance(lexer_t *lex);
 
-extern void lex_make_toks(lexer_t *lex, tok_list_t *list);
+extern tok_list_t lex_make_toks(lexer_t *lex);
 
 #endif

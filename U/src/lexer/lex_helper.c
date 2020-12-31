@@ -9,7 +9,7 @@ uint8_t lex_helper_read_file(const char *path, char **buffer, uint32_t *size)
   if (!file)
   {
     free(file);
-    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ + 1};
+    error_pos_t pos = {__FILE__, __FUNCTION__, 5};
     error_raise(&error_fatal, &pos, "Could not open file '%s'", path);
     return 1;
   }
@@ -24,7 +24,7 @@ uint8_t lex_helper_read_file(const char *path, char **buffer, uint32_t *size)
   if (!*buffer)
   {
     free(*buffer);
-    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ + 1};
+    error_pos_t pos = {__FILE__, __FUNCTION__, 19};
     error_raise(&error_memory, &pos, "Could not allocate sufficient memory for '%p'", buffer);
     return 1;
   }
@@ -33,7 +33,7 @@ uint8_t lex_helper_read_file(const char *path, char **buffer, uint32_t *size)
   if (status == EOF)
   {
     free(file);
-    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ + 1};
+    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ - 4};
     error_raise(&error_fatal, &pos, "Could not close file '%s'", path);
   }
   (*buffer)[(*size)] = '\0';

@@ -15,9 +15,9 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
         lexer_pos_t pos = lex_pos_copy(&lex->pos);
         lex_advance(lex);
         err_illegal_char_t eic = {{pos,
-                                     lex->pos,
-                                     "ErrIllegalChar",
-                                     "More than one decimal dot in number"}};
+                                   lex->pos,
+                                   "ErrIllegalChar",
+                                   "More than one decimal dot in number"}};
         err_raise(&eic.base);
       }
       ++dot_count;
@@ -85,9 +85,9 @@ static tok_t lex_make_tok(lexer_t *lex)
       char current_char = *lex->cur;
       lex_advance(lex);
       err_illegal_char_t eic = {{pos,
-                                   lex->pos,
-                                   "ErrIllegalChar",
-                                   "Illegal character '%c' found"}};
+                                 lex->pos,
+                                 "ErrIllegalChar",
+                                 "Illegal character '%c' found"}};
       err_raise(&eic.base, current_char);
     }
   }
@@ -106,9 +106,9 @@ void lex_pos_advance(lexer_pos_t *lex_pos, char *cur)
   }
 }
 
-lexer_pos_t lex_pos_copy(lexer_pos_t *lex_pos)
+void lex_pos_copy(lexer_pos_t *dest, lexer_pos_t *src)
 {
-  return *lex_pos;
+  *dest = *src;
 }
 
 lexer_t lex_create(const char *path)
@@ -145,19 +145,32 @@ void lex_advance(lexer_t *lex)
   }
 }
 
-void lex_make_toks(lexer_t *lex, tok_list_t *list)
+tok_list_t void lex_make_toks(lexer_t *lex)
 {
-  list->size = 0;
+  tok_list_t list;
+  list.size = 0;
   while (lex->cur)
   {
-    list->toks[list->size] = malloc(sizeof(tok_t));
-    if (!list->toks[list->size])
+    list.toks[list.size] = malloc(sizeof(tok_t));
+    if (!list.toks[list.size])
     {
-      free(list->toks[list->size]);
-      error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ + 1};
+      free(list.toks[list.size]);
+      error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ - 4};
       error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
     }
-    *list->toks[list->size] = lex_make_tok(lex);
-    ++list->size;
+    *list.toks[list.size] = lex_make_tok(lex);
+    ++list.size;
   }
+#if APPEND_EOF
+  list.toks[list.size] = malloc(sizeof(tok_t));
+  if (!list.toks[list.size])
+  {
+    free(list.toks[list.size]);
+    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ - 4};
+    error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
+  }
+  list.toks[list.size]->type = TOK_TYPE_EOF;
+  list.toks[list.size]->value = NULL;
+#endif
+  return list;
 }

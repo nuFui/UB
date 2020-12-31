@@ -1,5 +1,5 @@
-#include "../include/lex.h"
-#include "../include/error.h"
+#include "../../include/lexer/lex.h"
+#include "../../include/lexer/err.h"
 
 static void lex_make_number(lexer_t *lex, tok_t *tok)
 {
@@ -14,11 +14,11 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
       {
         lexer_pos_t pos = lex_pos_copy(&lex->pos);
         lex_advance(lex);
-        error_illegal_char_t eic = {{pos,
+        err_illegal_char_t eic = {{pos,
                                      lex->pos,
-                                     "ErrorIllegalChar",
+                                     "ErrIllegalChar",
                                      "More than one decimal dot in number"}};
-        error_raise(&eic.base);
+        err_raise(&eic.base);
       }
       ++dot_count;
     }
@@ -34,6 +34,7 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
 static tok_t lex_make_tok(lexer_t *lex)
 {
   tok_t tok;
+  tok.value = NULL;
   while (lex->cur)
   {
     switch (*lex->cur)
@@ -83,11 +84,11 @@ static tok_t lex_make_tok(lexer_t *lex)
       lexer_pos_t pos = lex_pos_copy(&lex->pos);
       char current_char = *lex->cur;
       lex_advance(lex);
-      error_illegal_char_t eic = {{pos,
+      err_illegal_char_t eic = {{pos,
                                    lex->pos,
-                                   "ErrorIllegalChar",
+                                   "ErrIllegalChar",
                                    "Illegal character '%c' found"}};
-      error_raise(&eic.base, current_char);
+      err_raise(&eic.base, current_char);
     }
   }
 ret:
@@ -117,7 +118,7 @@ lexer_t lex_create(const char *path)
   lex.pos.column = -1;
   lex.pos.line = 1;
   lex.pos.file = strdup(path);
-  lexh_read_file(path, &lex.text, &lex.size);
+  lex_helper_read_file(path, &lex.text, &lex.size);
   lex.cur = lex.text;
   lex_advance(&lex);
   return lex;
@@ -150,6 +151,12 @@ void lex_make_toks(lexer_t *lex, tok_list_t *list)
   while (lex->cur)
   {
     list->toks[list->size] = malloc(sizeof(tok_t));
+    if (!list->toks[list->size])
+    {
+      free(list->toks[list->size]);
+      error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ + 1};
+      error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
+    }
     *list->toks[list->size] = lex_make_tok(lex);
     ++list->size;
   }

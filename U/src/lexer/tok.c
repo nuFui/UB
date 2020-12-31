@@ -1,4 +1,4 @@
-#include "../include/tok.h"
+#include "../../include/lexer/tok.h"
 
 tok_t tok_create(uint8_t type, const char *value)
 {

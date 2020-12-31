@@ -1,4 +1,4 @@
-#include "include/lex.h"
+#include "include/lexer/lex.h"
 
 int main(int argc, char *argv[])
 {

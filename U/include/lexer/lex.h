@@ -1,9 +1,9 @@
-#ifndef __LEX_H__
-#define __LEX_H__
+#ifndef __LEXER_LEX_H__
+#define __LEXER_LEX_H__
 
 #include <ctype.h>
 
-#include "lexh.h"
+#include "lex_helper.h"
 #include "tok.h"
 
 typedef struct LexPosition

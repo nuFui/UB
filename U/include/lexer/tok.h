@@ -1,12 +1,12 @@
-#ifndef __TOK_H__
-#define __TOK_H__
+#ifndef __LEXER_TOK_H__
+#define __LEXER_TOK_H__
 
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 
-enum TokType {
+enum {
   TOK_TYPE_INT,
   TOK_TYPE_FLT,
   TOK_TYPE_ADD,

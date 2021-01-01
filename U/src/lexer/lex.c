@@ -97,22 +97,6 @@ ret:
   return tok;
 }
 
-void lex_pos_advance(lexer_pos_t *lex_pos, char *cur)
-{
-  ++lex_pos->index;
-  ++lex_pos->column;
-  if (*cur == '\n')
-  {
-    ++lex_pos->line;
-    lex_pos->column = 0;
-  }
-}
-
-void lex_pos_copy(lexer_pos_t *dest, lexer_pos_t *src)
-{
-  *dest = *src;
-}
-
 lexer_t lex_create(const char *path)
 {
   lexer_t lex;

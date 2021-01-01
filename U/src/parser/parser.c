@@ -12,29 +12,6 @@ static uint8_t in(uint8_t a, uint8_t coll[], uint8_t coll_count)
   return 0;
 }
 
-parse_result_t *parse_result_register(parse_result_t *self, parse_result_t *res)
-{
-  if (res->err)
-  {
-    self->err = malloc(sizeof(err_base_t));
-    err_copy(self->err, res->err, 1);
-  }
-  return self;
-}
-
-parse_result_t *parse_result_success(parse_result_t *self, generic_node_t *node)
-{
-  self->node = node;
-  return self;
-}
-
-parse_result_t *parse_result_failure(parse_result_t *self, error_base_t *err)
-{
-  self->err = malloc(sizeof(err_base_t));
-  err_copy(self->err, err, 1);
-  return self;
-}
-
 parser_t parser_create(tok_list_t *tokens)
 {
   parser_t par;
@@ -86,19 +63,22 @@ parse_result_t parser_factor(parser_t *par)
     {
       return res;
     }
+    node_unaryop_t unop = {
+        &t,
+        fac->node};
     node_generic_t ngen = {
         NULL,
         NULL,
-        {&t,
-         fac}};
+        &unop};
     return *parse_result_success(&res, &ngen);
   }
   else if (in(t.type, ops2, 2))
   {
     // PARSE_RESULT_REGISTER NEEDS SECOND PARAM
     parse_result_register(&res, NULL);
+    node_number_t num = {&t};
     node_generic_t ngen = {
-        {&t},
+        &num,
         NULL,
         NULL};
     return *parse_result_success(&res, &ngen);
@@ -126,7 +106,8 @@ parse_result_t parser_factor(parser_t *par)
            par->pos.end_pos,
            "ErrInvalidSyntax",
            "Expected ')'"}};
-      return *parse_result_failure(&res, &eis);
+      parse_result_t *fail = parse_result_failure(&res, &eis);
+      return *fail;
     }
   }
 }
@@ -147,7 +128,8 @@ parse_result_t parser_binop(parser_t *par, parse_result_t (*func)(parser_t *par)
 {
   parse_result_t res;
   node_binop_t bin;
-  parse_result_t *left = parse_result_register(&res, (*func)(par));
+  parse_result_t temp = func(par);
+  parse_result_t *left = parse_result_register(&res, &temp);
   if (res.err)
   {
     return res;
@@ -158,12 +140,13 @@ parse_result_t parser_binop(parser_t *par, parse_result_t (*func)(parser_t *par)
     tok_copy(op_tok, par->current_tok, 1);
     parser_advance(par);
     parse_result_register(&res, NULL);
-    parse_result_t *right = parse_result_register(&res, (*func)(par));
+    parse_result_t temp = func(par)
+        parse_result_t *right = parse_result_register(&res, &temp);
     if (res.err)
     {
       return res;
     }
-    bin = node_binop_create(left, op_tok, right);
+    bin = node_binop_create(left->node, op_tok, right->node);
   }
   node_generic_t ngen = {
       NULL,

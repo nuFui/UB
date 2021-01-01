@@ -3,7 +3,7 @@
 node_number_t node_number_create(tok_t *tok)
 {
   node_number_t nn;
-  tok_copy(&nn.num, tok, 1);
+  tok_copy(nn.num, tok, 1);
   return nn;
 }
 
@@ -12,7 +12,7 @@ node_binop_t node_binop_create(node_generic_t *l, tok_t *op, node_generic_t *r)
   node_binop_t nbop;
   nbop.left = l;
   nbop.right = r;
-  tok_copy(&nbop.op, op, 1);
+  tok_copy(nbop.op, op, 1);
   return nbop;
 }
 
@@ -38,7 +38,7 @@ void node_generic_print(node_generic_t *gnod)
 
 void node_number_print(node_number_t *nn)
 {
-  tok_print(nn->num);
+  tok_print(nn->num, 1);
 }
 
 void node_binop_print(node_binop_t *nbop)
@@ -55,6 +55,6 @@ void node_binop_print(node_binop_t *nbop)
 void node_unaryop_print(node_unaryop_t *nuop)
 {
   printf("(");
-  node_generic_print(noup->node);
+  node_generic_print(nuop->node);
   printf(")\n");
 }

@@ -1,6 +1,8 @@
 #ifndef __PARSER_NODE_H__
 #define __PARSER_NODE_H__
 
+#include "../lexer/tok.h"
+
 typedef struct NodeNumber node_number_t;
 typedef struct NodeBinOp node_binop_t;
 typedef struct NodeUnaryOp node_unaryop_t;

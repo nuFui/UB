@@ -12,7 +12,8 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
     {
       if (dot_count == 1)
       {
-        lexer_pos_t pos = lex_pos_copy(&lex->pos);
+        lexer_pos_t pos;
+        lex_pos_copy(&pos, &lex->pos);
         lex_advance(lex);
         err_illegal_char_t eic = {{pos,
                                    lex->pos,
@@ -81,7 +82,8 @@ static tok_t lex_make_tok(lexer_t *lex)
       lex_advance(lex);
       goto ret;
     default:;
-      lexer_pos_t pos = lex_pos_copy(&lex->pos);
+      lexer_pos_t pos;
+      lex_pos_copy(&pos, &lex->pos);
       char current_char = *lex->cur;
       lex_advance(lex);
       err_illegal_char_t eic = {{pos,
@@ -145,7 +147,7 @@ void lex_advance(lexer_t *lex)
   }
 }
 
-tok_list_t void lex_make_toks(lexer_t *lex)
+tok_list_t lex_make_toks(lexer_t *lex)
 {
   tok_list_t list;
   list.size = 0;

@@ -33,7 +33,7 @@ typedef struct TokList
 
 extern tok_t tok_create(uint8_t type, const char *value);
 extern void tok_delete(tok_t *tok);
-extern void tok_print(tok_t *tok);
+extern void tok_print(tok_t *tok, int newline);
 extern void tok_copy(tok_t *dest, tok_t *src, int delete_src);
 
 extern void tok_list_print(tok_list_t *list);

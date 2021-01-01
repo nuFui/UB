@@ -19,7 +19,7 @@ extern void err_print(err_base_t *err, ...);
 extern void err_vprint(err_base_t *err, va_list details);
 extern void err_raise(err_base_t *err, ...);
 
-extern void err_copy(err_base_t *dest, err_base_t *src);
+extern void err_copy(err_base_t *dest, err_base_t *src, int delete_src);
 
 typedef struct ErrIllegalChar
 {

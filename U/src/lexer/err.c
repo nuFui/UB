@@ -44,7 +44,7 @@ void err_copy(err_base_t *dest, err_base_t *src, int delete_src)
   dest->details = strdup(src->details);
   if (delete_src)
   {
-    free(src->name);
+    free((char*)src->name);
     free(src->details);
   }
 }

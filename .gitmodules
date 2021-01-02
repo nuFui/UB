@@ -1,3 +1,6 @@
 [submodule "U/test/U/test/munit"]
 	path = U/test/U/test/munit
 	url = https://www.github.com/nemequ/munit.git
+[submodule "munit"]
+	path = munit
+	url = https://www.github.com/nemequ/munit

@@ -1,6 +1,6 @@
 # UB
 
-Implementation of U lang.
+Beta implementation of U lang.
 
 Based on: https://github.com/davidcallanan/py-myopl-code
 

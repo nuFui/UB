@@ -1,22 +1,32 @@
 #include "../../include/lexer/tok.h"
 
-tok_t tok_create(uint8_t type, const char *value)
+tok_t tok_create(uint8_t type, const char *value, const char *file)
 {
   tok_t t;
   t.type = type;
+  t.line = 1;
+  t.column = 1;
+  t.file = strdup(file);
   t.value = strdup(value);
   return t;
 }
 
 void tok_delete(tok_t *tok)
 {
+  free(tok->file);
   free(tok->value);
+  tok->file = NULL;
   tok->value = NULL;
 }
 
-void tok_print(tok_t *tok, int newline)
+void tok_print(tok_t *tok, int newline, int verbose)
 {
-  printf("[type: %d value: %s]", tok->type, tok->value);
+  printf("[type: %d ", tok->type);
+  if (verbose)
+  {
+    printf("line: %d column: %d file: %s ", tok->line, tok->column, tok->file);
+  }
+  printf("value: %s]", tok->value);
   if (newline)
   {
     printf("\n");
@@ -26,6 +36,9 @@ void tok_print(tok_t *tok, int newline)
 void tok_copy(tok_t *dest, tok_t *src, int delete_src)
 {
   dest->type = src->type;
+  dest->line = src->line;
+  dest->column = src->column;
+  dest->file = strdup(src->file);
   dest->value = strdup(src->value);
   if (delete_src)
   {
@@ -33,11 +46,11 @@ void tok_copy(tok_t *dest, tok_t *src, int delete_src)
   }
 }
 
-void tok_list_print(tok_list_t *list)
+void tok_list_print(tok_list_t *list, int verbose)
 {
   for (int i = 0; i < list->count; ++i)
   {
-    tok_print(list->toks[i], 1);
+    tok_print(list->toks[i], 1, verbose);
   }
 }
 

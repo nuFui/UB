@@ -1,24 +1,27 @@
 #include "../../include/lexer/lex.h"
 #include "../../include/lexer/err.h"
 
+#define POSITION_TO_TOK          \
+  tok->line = lex->pos.line;     \
+  tok->column = lex->pos.column; \
+  tok->file = strdup(lex->pos.file);
+
 static void lex_make_number(lexer_t *lex, tok_t *tok)
 {
   uint8_t dot_count = 0;
   uint32_t size = 0;
   char *f = lex->cur;
+  POSITION_TO_TOK
   while (lex->cur && (isdigit(*lex->cur) || *lex->cur == '.'))
   {
     if (*lex->cur == '.')
     {
       if (dot_count == 1)
       {
-        lexer_pos_t pos;
-        lex_pos_copy(&pos, &lex->pos);
-        lex_advance(lex);
-        err_illegal_char_t eic = {{pos,
-                                   "ErrIllegalChar",
+        err_illegal_char_t eic = {{lex->pos,
+                                   "LexErrIllegalChar",
                                    "More than one decimal dot in number"}};
-        err_raise(&eic.base);
+        lex_err_raise(&eic.base);
       }
       ++dot_count;
     }
@@ -57,38 +60,40 @@ static tok_t lex_make_tok(lexer_t *lex)
       lex_make_number(lex, &tok);
       goto ret;
     case '+':
+      POSITION_TO_TOK
       tok.type = TOK_TYPE_ADD;
       lex_advance(lex);
       goto ret;
     case '-':
+      POSITION_TO_TOK
       tok.type = TOK_TYPE_SUB;
       lex_advance(lex);
       goto ret;
     case '*':
+      POSITION_TO_TOK
       tok.type = TOK_TYPE_MUL;
       lex_advance(lex);
       goto ret;
     case '/':
+      POSITION_TO_TOK
       tok.type = TOK_TYPE_DIV;
       lex_advance(lex);
       goto ret;
     case '(':
+      POSITION_TO_TOK
       tok.type = TOK_TYPE_LPAR;
       lex_advance(lex);
       goto ret;
     case ')':
+      POSITION_TO_TOK
       tok.type = TOK_TYPE_RPAR;
       lex_advance(lex);
       goto ret;
     default:;
-      lexer_pos_t pos;
-      lex_pos_copy(&pos, &lex->pos);
-      char current_char = *lex->cur;
-      lex_advance(lex);
-      err_illegal_char_t eic = {{pos,
-                                 "ErrIllegalChar",
-                                 "Illegal character '%c' found"}};
-      err_raise(&eic.base, current_char);
+      lex_err_illegal_char_t eic = {{lex->pos,
+                                     "ErrIllegalChar",
+                                     "Illegal character '%c' found"}};
+      lex_err_raise(&eic.base, *lex->cur);
     }
   }
 ret:
@@ -111,8 +116,8 @@ lexer_t lex_create(const char *path)
 void lex_destroy(lexer_t *lex)
 {
   free((char *)lex->pos.file);
-  lex->pos.file = NULL;
   free(lex->text);
+  lex->pos.file = NULL;
   lex->text = NULL;
 }
 

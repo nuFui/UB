@@ -22,6 +22,9 @@ enum
 typedef struct Tok
 {
   uint8_t type;
+  uint32_t line;
+  uint32_t column;
+  const char *file;
   char *value;
 } tok_t;
 
@@ -31,12 +34,12 @@ typedef struct TokList
   tok_t **toks;
 } tok_list_t;
 
-extern tok_t tok_create(uint8_t type, const char *value);
+extern tok_t tok_create(uint8_t type, const char *value, const char *file);
 extern void tok_delete(tok_t *tok);
 extern void tok_print(tok_t *tok, int newline);
 extern void tok_copy(tok_t *dest, tok_t *src, int delete_src);
 
-extern void tok_list_print(tok_list_t *list);
+extern void tok_list_print(tok_list_t *list, int verbose);
 extern void tok_list_copy(tok_list_t *dest, tok_list_t *src, int delete_src);
 extern void tok_list_delete(tok_list_t *list);
 

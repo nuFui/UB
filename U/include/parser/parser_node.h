@@ -17,9 +17,11 @@
 
 enum
 {
+  NODE_DUMMY = -1,
   NODE_EXPRESSION,
   NODE_BINARY_OP,
-  NODE_UNARY_OP
+  NODE_UNARY_OP,
+  NODE_NUMBER,
 };
 
 typedef struct ParserNode
@@ -32,7 +34,10 @@ typedef struct ParserNode
   struct ParserNode *bro;
 } parser_node_t;
 
+static parser_node_t **root;
+
 extern parser_node_t parser_node_create(uint8_t type, tok_t *data);
+extern void parser_parse(parser_t *par, parser_node_t *mov);
 extern void parser_node_kill_both(parser_node_t *par_node);
 extern void parser_node_kill_child(parser_node_t *par_node);
 extern void parser_node_kill_bro(parser_node_t *par_node);

@@ -11,7 +11,8 @@ parser_t parser_create(tok_list_t *list)
 
 void parser_destroy(parser_t *par)
 {
-  free(par->tok_cur);
+  tok_delete(par->tok_cur);
+  tok_list_delete(par->tok_list);
 }
 
 void parser_advance(parser_t *par)

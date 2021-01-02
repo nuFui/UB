@@ -1,6 +1,6 @@
-#include "../../include/lexer/err.h"
+#include "../../include/lexer/lex_err.h"
 
-void err_print(err_base_t *err, ...)
+void lex_err_print(lex_err_base_t *err, ...)
 {
   va_list args;
   va_start(args, err);
@@ -15,7 +15,7 @@ void err_print(err_base_t *err, ...)
   fprintf(stderr, ".%s\n", RESET);
 }
 
-void err_vprint(err_base_t *err, va_list details)
+void lex_err_vprint(lex_err_base_t *err, va_list details)
 {
   fprintf(stderr, "%s[err]:  file: %s, line: %d, column: %d\n\terror: %s, message: ",
           RED,
@@ -27,17 +27,17 @@ void err_vprint(err_base_t *err, va_list details)
   fprintf(stderr, ".%s\n", RESET);
 }
 
-void err_raise(err_base_t *err, ...)
+void lex_err_raise(lex_err_base_t *err, ...)
 {
   va_list args;
   va_start(args, err);
-  err_vprint(err, args);
+  lex_err_vprint(err, args);
   va_end(args);
   exit(EXIT_FAILURE);
 }
 
 // NOTE: Does not delete src pointer if delete_src = 1.
-void err_copy(err_base_t *dest, err_base_t *src, int delete_src)
+void lex_err_copy(lex_err_base_t *dest, lex_err_base_t *src, int delete_src)
 {
   lex_pos_copy(&dest->pos, &src->pos);
   dest->details = strdup(src->details);
@@ -45,5 +45,7 @@ void err_copy(err_base_t *dest, err_base_t *src, int delete_src)
   {
     free((char*)src->name);
     free(src->details);
+    src->name = NULL;
+    src->details = NULL;
   }
 }

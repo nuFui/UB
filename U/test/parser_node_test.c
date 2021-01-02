@@ -1,6 +1,6 @@
 #include "../include/parser/parser_node.h"
 #include "../include/lexer/lex.h"
-#include "U/test/munit/munit.h"
+#include "../../munit/munit.h"
 
 static void *setup(const MunitParameter params[], void *user_data)
 {

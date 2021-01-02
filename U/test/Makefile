@@ -7,7 +7,7 @@ EXEC = UB/U/test/
 SRC_COMMON = $(wildcard UB/U/src/common/*.c)
 SRC_LEXER = $(wildcard UB/U/src/lexer/*.c)
 SRC_PARSER = $(wildcard UB/U/src/parser/*.c)
-SRC_MUNIT = UB/U/test/U/test/munit/munit.c
+SRC_MUNIT = UB/munit/munit.c
 SRC = UB/U/test/parser_node_test.c
 
 SRCS = $(SRC_COMMON) $(SRC_LEXER) $(SRC_PARSER) $(SRC_MUNIT) $(SRC)

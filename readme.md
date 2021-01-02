@@ -1,6 +1,6 @@
 # UB
 
-Beta implementation of U lang.
+Beta implementation of U lang. The agony.
 
 Based on: https://github.com/davidcallanan/py-myopl-code
 

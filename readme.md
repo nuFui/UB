@@ -1,10 +1,10 @@
 # UB
 
-Beta implementation of U lang. The agony.
+Beta implementation of toy U lang. The agony.
 
 Based on: https://github.com/davidcallanan/py-myopl-code
 
 ## Milestones
 
-1. Create a lexer [done]
-2. Create a parser
+* [x] Create a lexer
+* [ ] Create a parser

@@ -1,4 +1,5 @@
 #include "include/lexer/lex.h"
+#include "include/parser/parser.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,8 +12,10 @@ int main(int argc, char *argv[])
   {
     lexer_t lex = lex_create(argv[2]);
     tok_list_t list = lex_make_toks(&lex);
-    tok_list_print(&list);
+    parser_t par = parser_create(&list);
+    parser_advance(&par);
     tok_list_delete(&list);
     lex_destroy(&lex);
+    parser_destroy(&par);
   }
 }

@@ -16,7 +16,6 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
         lex_pos_copy(&pos, &lex->pos);
         lex_advance(lex);
         err_illegal_char_t eic = {{pos,
-                                   lex->pos,
                                    "ErrIllegalChar",
                                    "More than one decimal dot in number"}};
         err_raise(&eic.base);
@@ -87,7 +86,6 @@ static tok_t lex_make_tok(lexer_t *lex)
       char current_char = *lex->cur;
       lex_advance(lex);
       err_illegal_char_t eic = {{pos,
-                                 lex->pos,
                                  "ErrIllegalChar",
                                  "Illegal character '%c' found"}};
       err_raise(&eic.base, current_char);
@@ -134,29 +132,29 @@ void lex_advance(lexer_t *lex)
 tok_list_t lex_make_toks(lexer_t *lex)
 {
   tok_list_t list;
-  list.size = 0;
+  list.count = 0;
   while (lex->cur)
   {
-    list.toks[list.size] = malloc(sizeof(tok_t));
-    if (!list.toks[list.size])
+    list.toks[list.count] = malloc(sizeof(tok_t));
+    if (!list.toks[list.count])
     {
-      free(list.toks[list.size]);
+      free(list.toks[list.count]);
       error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ - 4};
       error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
     }
-    *list.toks[list.size] = lex_make_tok(lex);
-    ++list.size;
+    *list.toks[list.count] = lex_make_tok(lex);
+    ++list.count;
   }
 #if APPEND_EOF
-  list.toks[list.size] = malloc(sizeof(tok_t));
-  if (!list.toks[list.size])
+  list.toks[list.count] = malloc(sizeof(tok_t));
+  if (!list.toks[list.count])
   {
-    free(list.toks[list.size]);
+    free(list.toks[list.count]);
     error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ - 4};
     error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
   }
-  list.toks[list.size]->type = TOK_TYPE_EOF;
-  list.toks[list.size]->value = NULL;
+  list.toks[list.count]->type = TOK_TYPE_EOF;
+  list.toks[list.count]->value = NULL;
 #endif
   return list;
 }

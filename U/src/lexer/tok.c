@@ -35,17 +35,17 @@ void tok_copy(tok_t *dest, tok_t *src, int delete_src)
 
 void tok_list_print(tok_list_t *list)
 {
-  for (int i = 0; i < list->size; ++i)
+  for (int i = 0; i < list->count; ++i)
   {
     tok_print(list->toks[i], 1);
   }
 }
 
-// NOTE: delete_src deletes the tokens in the src.
+// NOTE: delete_src deletes the tokens in the src if 1.
 void tok_list_copy(tok_list_t *dest, tok_list_t *src, int delete_src)
 {
-  dest->size = src->size;
-  for (int i = 0; i < src->size; ++i)
+  dest->count = src->count;
+  for (int i = 0; i < src->count; ++i)
   {
     dest->toks[i] = malloc(sizeof(tok_t));
     tok_copy(dest->toks[i], src->toks[i], delete_src);
@@ -58,7 +58,7 @@ void tok_list_copy(tok_list_t *dest, tok_list_t *src, int delete_src)
 
 void tok_list_delete(tok_list_t *list)
 {
-  for (int i = 0; i < list->size; ++i)
+  for (int i = 0; i < list->count; ++i)
   {
     tok_delete(list->toks[i]);
   }

@@ -9,8 +9,7 @@
 
 typedef struct ErrBase
 {
-  lexer_pos_t start_pos;
-  lexer_pos_t end_pos;
+  lexer_pos_t pos;
   const char *name;
   char *details;
 } err_base_t;

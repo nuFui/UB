@@ -27,7 +27,7 @@ typedef struct Tok
 
 typedef struct TokList
 {
-  uint16_t size;
+  uint32_t count;
   tok_t **toks;
 } tok_list_t;
 

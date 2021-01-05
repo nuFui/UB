@@ -4,7 +4,7 @@ void parser_err_print(parser_err_base_t *err, ...)
 {
   va_list args;
   va_start(args, err);
-  vfprintf(stderr, "%s[err]:  file: %s, line %d, column: %d\n\terror: %s, message: ",
+  fprintf(stderr, "%s[err]:  file: %s, line %d, column: %d\n\terror: %s, message: ",
            RED,
            err->t->file,
            err->t->line,
@@ -44,8 +44,8 @@ void parser_err_copy(parser_err_base_t *dest, parser_err_base_t *src, int delete
   if (delete_src)
   {
     free((char*)src->name);
-    free(src->detials);
+    free(src->details);
     src->name = NULL;
-    src->detials = NULL;
+    src->details = NULL;
   }
 }

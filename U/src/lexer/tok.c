@@ -13,7 +13,7 @@ tok_t tok_create(uint8_t type, const char *value, const char *file)
 
 void tok_delete(tok_t *tok)
 {
-  free(tok->file);
+  free((char*)tok->file);
   free(tok->value);
   tok->file = NULL;
   tok->value = NULL;

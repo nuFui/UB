@@ -36,7 +36,12 @@ void parser_node_kill_both(parser_node_t *par_node)
 PARSER_NODE_KILL(child)
 PARSER_NODE_KILL(bro)
 
-void parser_parse(parser_t *par, parser_node_t *mov)
+
+
+
+/*void parser_parse(parser_t *par, parser_node_
+
+/*void parser_parse(parser_t *par, parser_node_t *mov)
 {
   if (par->tok_cur->type == TOK_TYPE_INT || par->tok_cur->type == TOK_TYPE_FLT)
   {
@@ -61,7 +66,7 @@ void parser_parse(parser_t *par, parser_node_t *mov)
           par->tok_cur->type == TOK_TYPE_MUL ||
           par->tok_cur->type == TOK_TYPE_DIV)
       {
-        parser_err_invalid_syntax eis = {{par->tok_cur, "ParserErrInvalidSyntax", "Expected number, '(' or ')' after operator"}};
+        parser_err_invalid_syntax eis = {{par->tok_cur, "ParserErrInvalidSyntax", "Expected number or '(' after operator"}};
         parser_destroy(par);
         parser_node_kill_both(mov);
         parser_err_raise(&eis.base);
@@ -84,7 +89,7 @@ void parser_parse(parser_t *par, parser_node_t *mov)
         (mov->child + sizeof(parser_node_t) * 2)->type = NODE_NUMBER;
         (mov->child + sizeof(parser_node_t) * 2)->data = par->tok_cur;
         (mov->child + sizeof(parser_node_t) * 2)->bro_count = 3;
-        (mov->child + sizeof(parser_node_t) * 2)->bro = NULL;    // No bros to the right.
+        (mov->child + sizeof(parser_node_t) * 2)->bro = NULL; // No bros to the right.
       }
       else if (par->tok_cur->type == TOK_TYPE_LPAR)
       {
@@ -101,4 +106,4 @@ void parser_parse(parser_t *par, parser_node_t *mov)
       }
     }
   }
-}
+}*/

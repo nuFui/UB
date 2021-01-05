@@ -3,6 +3,7 @@
 
 #include <stdarg.h>
 
+#include "../lexer/tok.h"
 #include "../common/constants.h"
 
 typedef struct ParserErrBase

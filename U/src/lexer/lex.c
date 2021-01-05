@@ -1,26 +1,20 @@
 #include "../../include/lexer/lex.h"
-#include "../../include/lexer/err.h"
-
-#define POSITION_TO_TOK          \
-  tok->line = lex->pos.line;     \
-  tok->column = lex->pos.column; \
-  tok->file = strdup(lex->pos.file);
+#include "../../include/lexer/lex_err.h"
 
 static void lex_make_number(lexer_t *lex, tok_t *tok)
 {
   uint8_t dot_count = 0;
   uint32_t size = 0;
   char *f = lex->cur;
-  POSITION_TO_TOK
   while (lex->cur && (isdigit(*lex->cur) || *lex->cur == '.'))
   {
     if (*lex->cur == '.')
     {
       if (dot_count == 1)
       {
-        err_illegal_char_t eic = {{lex->pos,
-                                   "LexErrIllegalChar",
-                                   "More than one decimal dot in number"}};
+        lex_err_illegal_char_t eic = {{lex->pos,
+                                       "LexErrIllegalChar",
+                                       "More than one decimal dot in number"}};
         lex_err_raise(&eic.base);
       }
       ++dot_count;
@@ -29,6 +23,13 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
     lex_advance(lex);
   }
   tok->value = malloc(sizeof(char) * size);
+  if (!tok->value)
+  {
+    lex_destroy(lex);
+    tok_delete(tok);
+    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
+    error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
+  }
   strncpy(tok->value, f, size);
   tok->value[size] = '\0';
   tok->type = dot_count ? TOK_TYPE_FLT : TOK_TYPE_INT;
@@ -36,7 +37,7 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
 
 static tok_t lex_make_tok(lexer_t *lex)
 {
-  tok_t tok;
+  tok_t tok = {-1, lex->pos.line, lex->pos.column, strdup(lex->pos.file)};
   tok.value = NULL;
   while (lex->cur)
   {
@@ -60,32 +61,26 @@ static tok_t lex_make_tok(lexer_t *lex)
       lex_make_number(lex, &tok);
       goto ret;
     case '+':
-      POSITION_TO_TOK
       tok.type = TOK_TYPE_ADD;
       lex_advance(lex);
       goto ret;
     case '-':
-      POSITION_TO_TOK
       tok.type = TOK_TYPE_SUB;
       lex_advance(lex);
       goto ret;
     case '*':
-      POSITION_TO_TOK
       tok.type = TOK_TYPE_MUL;
       lex_advance(lex);
       goto ret;
     case '/':
-      POSITION_TO_TOK
       tok.type = TOK_TYPE_DIV;
       lex_advance(lex);
       goto ret;
     case '(':
-      POSITION_TO_TOK
       tok.type = TOK_TYPE_LPAR;
       lex_advance(lex);
       goto ret;
     case ')':
-      POSITION_TO_TOK
       tok.type = TOK_TYPE_RPAR;
       lex_advance(lex);
       goto ret;

@@ -17,3 +17,4 @@ extern node_binary_t **root;
 extern void node_binary_tree_root_init();
 extern void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *mov);
 extern void node_binary_tree_delete(node_binary_t *mov);
+extern void node_binary_tree_print();

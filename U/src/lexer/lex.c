@@ -37,7 +37,7 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
 
 static tok_t lex_make_tok(lexer_t *lex)
 {
-  tok_t tok = {-1, lex->pos.line, lex->pos.column, strdup(lex->pos.file)};
+  tok_t tok = {-1, lex->pos.line, lex->pos.column, lex->pos.file};
   tok.value = NULL;
   while (lex->cur)
   {
@@ -101,7 +101,7 @@ lexer_t lex_create(const char *path)
   lex.pos.index = -1;
   lex.pos.column = -1;
   lex.pos.line = 1;
-  lex.pos.file = strdup(path);
+  lex.pos.file = path;
   lex_helper_read_file(path, &lex.text, &lex.size);
   lex.cur = lex.text;
   lex_advance(&lex);
@@ -110,7 +110,6 @@ lexer_t lex_create(const char *path)
 
 void lex_destroy(lexer_t *lex)
 {
-  free((char *)lex->pos.file);
   free(lex->text);
   lex->pos.file = NULL;
   lex->text = NULL;
@@ -139,7 +138,7 @@ tok_list_t lex_make_toks(lexer_t *lex)
     if (!list.toks[list.count])
     {
       free(list.toks[list.count]);
-      error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ - 4};
+      error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
       error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
     }
     *list.toks[list.count] = lex_make_tok(lex);
@@ -150,7 +149,7 @@ tok_list_t lex_make_toks(lexer_t *lex)
   if (!list.toks[list.count])
   {
     free(list.toks[list.count]);
-    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__ - 4};
+    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
     error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
   }
   list.toks[list.count]->type = TOK_TYPE_EOF;

@@ -6,6 +6,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "../common/error.h"
+
 enum
 {
   TOK_TYPE_INT,

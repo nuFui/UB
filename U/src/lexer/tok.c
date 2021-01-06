@@ -6,16 +6,14 @@ tok_t tok_create(uint8_t type, const char *value, const char *file)
   t.type = type;
   t.line = 1;
   t.column = 1;
-  t.file = strdup(file);
+  t.file = file;
   t.value = strdup(value);
   return t;
 }
 
 void tok_delete(tok_t *tok)
 {
-  free((char*)tok->file);
   free(tok->value);
-  tok->file = NULL;
   tok->value = NULL;
 }
 
@@ -38,8 +36,18 @@ void tok_copy(tok_t *dest, tok_t *src, int delete_src)
   dest->type = src->type;
   dest->line = src->line;
   dest->column = src->column;
-  dest->file = strdup(src->file);
-  dest->value = strdup(src->value);
+  dest->file = src->file;
+  if (!dest->file || !dest->value)
+  {
+    tok_delete(dest);
+    tok_delete(src);
+    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
+    error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
+  }
+  if (src->value)
+  {
+    dest->value = strdup(src->value);
+  }
   if (delete_src)
   {
     tok_delete(src);
@@ -61,6 +69,14 @@ void tok_list_copy(tok_list_t *dest, tok_list_t *src, int delete_src)
   for (int i = 0; i < src->count; ++i)
   {
     dest->toks[i] = malloc(sizeof(tok_t));
+    if (!dest->toks[i])
+    {
+      free(dest->toks[i]);
+      tok_list_delete(dest);
+      tok_list_delete(src);
+      error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
+      error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
+    }
     tok_copy(dest->toks[i], src->toks[i], delete_src);
   }
   if (delete_src)

@@ -9,10 +9,23 @@ void node_binary_tree_root_init()
   root = malloc(sizeof(node_binary_t *));
 }
 
-static uint32_t find_next(parser_t *par, uint8_t types[], uint8_t types_count)
+static uint32_t find_next(parser_t *par, uint8_t scp, uint8_t types[], uint8_t types_count)
 {
   for (int i = last; i < par->tok_list->count; ++i)
   {
+    switch (par->tok_list->toks[i]->type)
+    {
+    case TOK_TYPE_LPAR:
+      ++scope;
+      break;
+    case TOK_TYPE_RPAR:
+      --scope;
+      break;
+    }
+    if (scope != scp)
+    {
+      continue;
+    }
     for (int ii = 0; ii < types_count; ++ii)
     {
       if (par->tok_list->toks[i]->type == types[ii])
@@ -28,6 +41,7 @@ static uint32_t find_next(parser_t *par, uint8_t types[], uint8_t types_count)
 static uint8_t taddsub[2] = {TOK_TYPE_ADD, TOK_TYPE_SUB};
 static uint8_t tmuldiv[2] = {TOK_TYPE_MUL, TOK_TYPE_DIV};
 static uint8_t tintflt[2] = {TOK_TYPE_INT, TOK_TYPE_FLT};
+static uint8_t tparpar[2] = {TOK_TYPE_LPAR, TOK_TYPE_RPAR};
 
 void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *mov)
 {
@@ -49,7 +63,7 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
       return;
     }
   }
-  uint32_t i = find_next(par, taddsub, 2);
+  uint32_t i = find_next(par, scope, taddsub, 2);
   if (i != par->tok_list->count + 1)
   {
     mov->op = par->tok_list->toks[i];
@@ -59,7 +73,7 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
     node_binary_tree(i + 1, to, par, mov->right);
   }
 
-  i = find_next(par, tmuldiv, 2);
+  i = find_next(par, scope, tmuldiv, 2);
   if (i != par->tok_list->count + 1)
   {
     mov->op = par->tok_list->toks[i];
@@ -67,6 +81,19 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
     mov->right = malloc(sizeof(node_binary_t));
     node_binary_tree(from, i, par, mov->left);
     node_binary_tree(i + 1, to, par, mov->right);
+  }
+
+  switch (par->tok_list->toks[from]->type)
+  {
+  case TOK_TYPE_LPAR:
+    ++scope;
+    uint8_t dummy[1] = {TOK_TYPE_RPAR};
+    i = find_next(par, scope, dummy, 1);
+    node_binary_tree(from + 1, i, mov);
+    break;
+  case TOK_TYPE_RPAR:
+    --scope;
+    break;
   }
 }
 

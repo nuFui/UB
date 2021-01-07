@@ -9,29 +9,28 @@ void node_binary_tree_root_init()
   root = malloc(sizeof(node_binary_t *));
 }
 
-static uint32_t find_next(parser_t *par, uint8_t scp, uint8_t types[], uint8_t types_count)
+static uint32_t find_next(parser_t *par, uint8_t types[], uint8_t types_count)
 {
+  uint8_t scp = 0;
   for (int i = last; i < par->tok_list->count; ++i)
   {
     switch (par->tok_list->toks[i]->type)
     {
     case TOK_TYPE_LPAR:
-      ++scope;
+      ++scp;
       break;
     case TOK_TYPE_RPAR:
-      --scope;
-      break;
+      --scp;
     }
-    if (scope != scp)
+    if (scope == scp)
     {
-      continue;
-    }
-    for (int ii = 0; ii < types_count; ++ii)
-    {
-      if (par->tok_list->toks[i]->type == types[ii])
+      for (int ii = 0; ii < types_count; ++ii)
       {
-        last = i + 1;
-        return i;
+        if (par->tok_list->toks[i]->type == types[ii])
+        {
+          last = i + 1;
+          return i;
+        }
       }
     }
   }
@@ -63,7 +62,8 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
       return;
     }
   }
-  uint32_t i = find_next(par, scope, taddsub, 2);
+  
+  uint32_t i = find_next(par, taddsub, 2);
   if (i != par->tok_list->count + 1)
   {
     mov->op = par->tok_list->toks[i];
@@ -73,7 +73,7 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
     node_binary_tree(i + 1, to, par, mov->right);
   }
 
-  i = find_next(par, scope, tmuldiv, 2);
+  i = find_next(par, tmuldiv, 2);
   if (i != par->tok_list->count + 1)
   {
     mov->op = par->tok_list->toks[i];
@@ -83,17 +83,11 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
     node_binary_tree(i + 1, to, par, mov->right);
   }
 
-  switch (par->tok_list->toks[from]->type)
+  if (par->tok_list->toks[from]->type == TOK_TYPE_LPAR && par->tok_list->toks[to - 1]->type == TOK_TYPE_RPAR)
   {
-  case TOK_TYPE_LPAR:
     ++scope;
-    uint8_t dummy[1] = {TOK_TYPE_RPAR};
-    i = find_next(par, scope, dummy, 1);
-    node_binary_tree(from + 1, i, mov);
-    break;
-  case TOK_TYPE_RPAR:
-    --scope;
-    break;
+    last = from;
+    node_binary_tree(from + 1, to, par, mov);
   }
 }
 

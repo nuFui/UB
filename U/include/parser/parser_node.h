@@ -1,3 +1,8 @@
+#ifndef __PARSER_PARSER_NODE_H__
+#define __PARSER_PARSER_NODE_H__
+
+#include <math.h>
+
 #include "parser.h"
 
 typedef struct NodeBinary {
@@ -8,7 +13,6 @@ typedef struct NodeBinary {
 
 /*
 If right is number but op and left are NULL => this is a number node.
-If right is number and op is token but left is NULL => this is a unary operation node.
 If none are NULL => this is a binary operation node.
 */
 
@@ -18,3 +22,5 @@ extern void node_binary_tree_root_init();
 extern void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *mov);
 extern void node_binary_tree_delete(node_binary_t *mov);
 extern void node_binary_tree_print();
+
+#endif

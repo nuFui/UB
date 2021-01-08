@@ -76,6 +76,10 @@ static tok_t lex_make_tok(lexer_t *lex)
       tok.type = TOK_TYPE_DIV;
       lex_advance(lex);
       goto ret;
+    case '^':
+      tok.type = TOK_TYPE_POW;
+      lex_advance(lex);
+      goto ret;
     case '(':
       tok.type = TOK_TYPE_LPAR;
       lex_advance(lex);

@@ -66,10 +66,6 @@ static uint8_t precedence[5] = {
     TOK_TYPE_MUL,
     TOK_TYPE_POW};
 
-static uint8_t taddsub[2] = {TOK_TYPE_ADD, TOK_TYPE_SUB};
-static uint8_t tmuldiv[2] = {TOK_TYPE_MUL, TOK_TYPE_DIV};
-static uint8_t tpow[1] = {TOK_TYPE_POW};
-
 static uint8_t tintflt[2] = {TOK_TYPE_INT, TOK_TYPE_FLT};
 static uint8_t tparpar[2] = {TOK_TYPE_LPAR, TOK_TYPE_RPAR};
 
@@ -78,7 +74,7 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
   mov->op = NULL;
   mov->left = NULL;
   mov->right = NULL;
-  
+
   if (to - from == 1)
   {
     if (par->tok_list->toks[from]->type == TOK_TYPE_INT || par->tok_list->toks[from]->type == TOK_TYPE_FLT)
@@ -100,10 +96,13 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
 
   if (par->tok_list->toks[from]->type == TOK_TYPE_LPAR && par->tok_list->toks[to - 1]->type == TOK_TYPE_RPAR)
   {
-    ++scope;
-    last = from + 1;
-    node_binary_tree(from + 1, to - 1, par, mov);
-    --scope;
+    if (from != 0 || to != par->tok_list->count)
+    {
+      ++scope;
+      last = from + 1;
+      node_binary_tree(from + 1, to - 1, par, mov);
+      --scope;
+    }
   }
 }
 

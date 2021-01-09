@@ -42,5 +42,11 @@ struct EvalResult node_binary_tree_eval(node_binary_t *mov)
   }
   struct EvalResult l = node_binary_tree_eval(mov->left);
   struct EvalResult r = node_binary_tree_eval(mov->right);
-  return node_binary_eval(mov, l, r);
+  struct EvalResult s = node_binary_eval(mov, l, r);
+  if (s.code == EVAL_FAILURE)
+  {
+    node_binary_tree_delete(mov);
+    exit(EXIT_FAILURE);
+  }
+  return s;
 }

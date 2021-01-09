@@ -37,7 +37,7 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
 
 static tok_t lex_make_tok(lexer_t *lex)
 {
-  tok_t tok = {-1, lex->pos.line, lex->pos.column, lex->pos.file};
+  tok_t tok = {-1, lex->pos.line, lex->pos.column};
   tok.value = NULL;
   while (lex->cur)
   {
@@ -136,16 +136,20 @@ tok_list_t lex_make_toks(lexer_t *lex)
 {
   tok_list_t list;
   list.count = 0;
+  const char *file = strdup(lex->pos.file);
+  lex->pos.file = NULL;
   while (lex->cur)
   {
     list.toks[list.count] = malloc(sizeof(tok_t));
     if (!list.toks[list.count])
     {
       free(list.toks[list.count]);
+      lex_destroy(lex);
       error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
       error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
     }
     *list.toks[list.count] = lex_make_tok(lex);
+    list.toks[list.count]->file = file;
     ++list.count;
   }
 #if APPEND_EOF
@@ -153,6 +157,7 @@ tok_list_t lex_make_toks(lexer_t *lex)
   if (!list.toks[list.count])
   {
     free(list.toks[list.count]);
+    lex_destroy(lex);
     error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
     error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
   }

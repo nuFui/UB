@@ -9,42 +9,66 @@ void node_binary_tree_root_init()
   root = malloc(sizeof(node_binary_t *));
 }
 
-static uint32_t find_next(parser_t *par, uint8_t types[], uint8_t types_count)
+static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, uint8_t types[], uint8_t types_count)
 {
   uint8_t scp = scope;
-  for (int i = last; i < par->tok_list->count; ++i)
+  uint8_t smallest = TOK_TYPE_DUMMY_MAX;
+  int32_t smallest_index = -1;
+  while (from < to)
   {
-    switch (par->tok_list->toks[i]->type)
+    switch (par->tok_list->toks[from]->type)
     {
     case TOK_TYPE_LPAR:
       ++scp;
       break;
     case TOK_TYPE_RPAR:
       --scp;
+      break;
+    case TOK_TYPE_INT:
+    case TOK_TYPE_FLT:
+    case TOK_TYPE_EOF:
+    case TOK_TYPE_DUMMY_MAX:
+      break;
+    default:
+      goto cmp;
     }
-    if (scope == scp)
+    ++from;
+    continue;
+  cmp:
+    if (scp == scope)
     {
-      for (int ii = 0; ii < types_count; ++ii)
+      for (int j = 0; j < types_count; ++j)
       {
-        if (par->tok_list->toks[i]->type == types[ii])
+        if (par->tok_list->toks[from]->type == types[j])
         {
-          last = i + 1;
-          return i;
+          goto small;
         }
       }
+      ++from;
+      continue;
+    small:
+      if (par->tok_list->toks[from]->type < smallest)
+      {
+        smallest = par->tok_list->toks[from]->type;
+        smallest_index = from;
+      }
     }
+    ++from;
   }
-  return par->tok_list->count + 1;
+  return smallest_index;
 }
 
 // PEMDAS
 static uint8_t precedence[5] = {
-  TOK_TYPE_SUB,
-  TOK_TYPE_ADD,
-  TOK_TYPE_DIV,
-  TOK_TYPE_MUL,
-  TOK_TYPE_POW
-};
+    TOK_TYPE_SUB,
+    TOK_TYPE_ADD,
+    TOK_TYPE_DIV,
+    TOK_TYPE_MUL,
+    TOK_TYPE_POW};
+
+static uint8_t taddsub[2] = {TOK_TYPE_ADD, TOK_TYPE_SUB};
+static uint8_t tmuldiv[2] = {TOK_TYPE_MUL, TOK_TYPE_DIV};
+static uint8_t tpow[1] = {TOK_TYPE_POW};
 
 static uint8_t tintflt[2] = {TOK_TYPE_INT, TOK_TYPE_FLT};
 static uint8_t tparpar[2] = {TOK_TYPE_LPAR, TOK_TYPE_RPAR};
@@ -54,13 +78,7 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
   mov->op = NULL;
   mov->left = NULL;
   mov->right = NULL;
-  if (to == from)
-  {
-    // Unary operation
-    free(mov);
-    mov = NULL;
-    return;
-  }
+  
   if (to - from == 1)
   {
     if (par->tok_list->toks[from]->type == TOK_TYPE_INT || par->tok_list->toks[from]->type == TOK_TYPE_FLT)
@@ -70,8 +88,8 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
     }
   }
 
-  uint32_t i = find_next(par, precedence, 5);
-  if (i != par->tok_list->count + 1)
+  int32_t i = find_next_op(par, from, to, precedence, 5);
+  if (i != -1)
   {
     mov->op = par->tok_list->toks[i];
     mov->left = malloc(sizeof(node_binary_t));

@@ -10,8 +10,6 @@
 
 enum
 {
-  TOK_TYPE_INT,
-  TOK_TYPE_FLT,
   TOK_TYPE_SUB,
   TOK_TYPE_ADD,
   TOK_TYPE_DIV,
@@ -19,7 +17,10 @@ enum
   TOK_TYPE_POW,
   TOK_TYPE_LPAR,
   TOK_TYPE_RPAR,
-  TOK_TYPE_EOF
+  TOK_TYPE_INT,
+  TOK_TYPE_FLT,
+  TOK_TYPE_EOF,
+  TOK_TYPE_DUMMY_MAX
 };
 
 typedef struct Tok

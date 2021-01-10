@@ -59,7 +59,7 @@ static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, uint8_t t
 }
 
 // PEMDAS
-static uint8_t precedence[5] = {
+static uint8_t ops[5] = {
     TOK_TYPE_SUB,
     TOK_TYPE_ADD,
     TOK_TYPE_DIV,
@@ -84,9 +84,13 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
     }
   }
 
-  int32_t i = find_next_op(par, from, to, precedence, 5);
+  int32_t i = find_next_op(par, from, to, ops, 5);
   if (i != -1)
   {
+    if (par->tok_list->toks[i]->type == TOK_TYPE_SUB)
+    {
+      // TODO: Implement unary minus.
+    }
     mov->op = par->tok_list->toks[i];
     mov->left = malloc(sizeof(node_binary_t));
     mov->right = malloc(sizeof(node_binary_t));

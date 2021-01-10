@@ -15,6 +15,6 @@ struct EvalResult
   float result;
 };
 
-extern struct EvalResult node_binary_tree_eval(node_binary_t *mov);
+extern struct EvalResult node_binary_tree_eval(node_binary_t *prev, node_binary_t *mov);
 
 #endif

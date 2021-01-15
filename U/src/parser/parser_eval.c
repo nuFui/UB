@@ -1,10 +1,6 @@
 #include "../../include/parser/parser_eval.h"
 
-/*
-static uint32_t eval_scope = 0;
-static uint8_t was_minus = 0;
-*/
-
+// Evaluates binary operation given left, right operand and the node->op->type.
 static struct EvalResult node_binary_eval(node_binary_t *node, struct EvalResult left, struct EvalResult right, int was_minus)
 {
   struct EvalResult res;
@@ -36,8 +32,7 @@ static struct EvalResult node_binary_eval(node_binary_t *node, struct EvalResult
   return res;
 }
 
-static int count = 0;
-
+// Evaluates binary tree from leaves up. 
 struct EvalResult node_binary_tree_eval(node_binary_t *mov, int was_minus)
 {
   if (mov->op->type == TOK_TYPE_INT || mov->op->type == TOK_TYPE_FLT)

@@ -1,6 +1,8 @@
 #include "../../include/lexer/lex.h"
 #include "../../include/lexer/lex_err.h"
 
+// Creates a number, can raise error on double dots or heap-allocation failure.
+// Function cleans up lexer and token if error is triggered.
 static void lex_make_number(lexer_t *lex, tok_t *tok)
 {
   uint8_t dot_count = 0;
@@ -12,6 +14,7 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
     {
       if (dot_count == 1)
       {
+        lex_destroy(lex);
         lex_err_illegal_char_t eic = {{lex->pos,
                                        "LexErrIllegalChar",
                                        "More than one decimal dot in number"}};
@@ -35,6 +38,7 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
   tok->type = dot_count ? TOK_TYPE_FLT : TOK_TYPE_INT;
 }
 
+// Creates token given lexer, can raise error if illegal character was found.
 static tok_t lex_make_tok(lexer_t *lex)
 {
   tok_t tok = {-1, lex->pos.line, lex->pos.column};
@@ -99,6 +103,7 @@ ret:
   return tok;
 }
 
+// Return new lexer object coupled with path to file it is lexing.
 lexer_t lex_create(const char *path)
 {
   lexer_t lex;
@@ -119,6 +124,7 @@ void lex_destroy(lexer_t *lex)
   lex->text = NULL;
 }
 
+// Sets lexer cursor to the next character, cursor is set to NULL if former EOF is reached.
 void lex_advance(lexer_t *lex)
 {
   lex_pos_advance(&lex->pos, lex->cur);
@@ -132,6 +138,8 @@ void lex_advance(lexer_t *lex)
   }
 }
 
+// Given lexer creates the list of tokens for lex->file.
+// Can raise error if heap-allocation fails.
 tok_list_t lex_make_toks(lexer_t *lex)
 {
   tok_list_t list;

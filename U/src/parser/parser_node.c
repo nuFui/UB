@@ -9,6 +9,7 @@ void node_binary_tree_root_init()
   root = malloc(sizeof(node_binary_t *));
 }
 
+// Finds next operator in types[] in the current scope.
 static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, uint8_t types[], uint8_t types_count)
 {
   uint8_t scp = scope;
@@ -66,9 +67,13 @@ static uint8_t ops[5] = {
     TOK_TYPE_MUL,
     TOK_TYPE_POW};
 
-static uint8_t tintflt[2] = {TOK_TYPE_INT, TOK_TYPE_FLT};
-static uint8_t tparpar[2] = {TOK_TYPE_LPAR, TOK_TYPE_RPAR};
-
+// Constructs binary tree of operations.
+// How expression 2 * 4 looks like:
+//                 BINOP
+//              /   |   \
+//        BINOP     *    BINOP
+//      /   |  \       /   |   \
+//  NULL   2   NULL  NULL  4  NULL
 void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *mov)
 {
   mov->op = NULL;

@@ -1,5 +1,7 @@
 #include "../../include/lexer/lex_helper.h"
 
+// Reads file contents info a null-terminated string on the heap.
+// Can raise heap-allocation error if fail.
 uint8_t lex_helper_read_file(const char *path, char **buffer, uint32_t *size)
 {
   FILE *file = fopen(path, "r");
@@ -24,6 +26,7 @@ uint8_t lex_helper_read_file(const char *path, char **buffer, uint32_t *size)
   if (!*buffer)
   {
     free(*buffer);
+    fclose(file);
     error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
     error_raise(&error_memory, &pos, "Could not allocate sufficient memory for '%p'", buffer);
     return 1;
@@ -32,6 +35,7 @@ uint8_t lex_helper_read_file(const char *path, char **buffer, uint32_t *size)
   int status = fclose(file);
   if (status == EOF)
   {
+    free(*buffer);
     free(file);
     error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
     error_raise(&error_fatal, &pos, "Could not close file '%s'", path);

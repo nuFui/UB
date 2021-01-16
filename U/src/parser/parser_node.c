@@ -2,7 +2,6 @@
 
 node_binary_t **root = NULL;
 static uint8_t scope = 0;
-static uint32_t last = 0;
 
 void node_binary_tree_root_init()
 {
@@ -15,15 +14,16 @@ static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, uint8_t t
   uint8_t scp = scope;
   uint8_t smallest = TOK_TYPE_DUMMY_MAX;
   int32_t smallest_index = -1;
-  while (from < to)
+
+  while (to > from)
   {
-    switch (par->tok_list->toks[from]->type)
+    switch (par->tok_list->toks[to]->type)
     {
     case TOK_TYPE_LPAR:
-      ++scp;
+      --scp;
       break;
     case TOK_TYPE_RPAR:
-      --scp;
+      ++scp;
       break;
     case TOK_TYPE_INT:
     case TOK_TYPE_FLT:
@@ -33,28 +33,28 @@ static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, uint8_t t
     default:
       goto cmp;
     }
-    ++from;
+    --to;
     continue;
   cmp:
     if (scp == scope)
     {
       for (int j = 0; j < types_count; ++j)
       {
-        if (par->tok_list->toks[from]->type == types[j])
+        if (par->tok_list->toks[to]->type == types[j])
         {
           goto small;
         }
       }
-      ++from;
+      --to;
       continue;
     small:
-      if (par->tok_list->toks[from]->type < smallest)
+      if (par->tok_list->toks[to]->type < smallest)
       {
-        smallest = par->tok_list->toks[from]->type;
-        smallest_index = from;
+        smallest = par->tok_list->toks[to]->type;
+        smallest_index = to;
       }
     }
-    ++from;
+    --to;
   }
   return smallest_index;
 }
@@ -80,11 +80,11 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
   mov->left = NULL;
   mov->right = NULL;
 
-  if (to - from == 1)
+  if (to == from)
   {
-    if (par->tok_list->toks[from]->type == TOK_TYPE_INT || par->tok_list->toks[from]->type == TOK_TYPE_FLT)
+    if (par->tok_list->toks[to]->type == TOK_TYPE_INT || par->tok_list->toks[to]->type == TOK_TYPE_FLT)
     {
-      mov->op = par->tok_list->toks[from];
+      mov->op = par->tok_list->toks[to];
       return;
     }
   }
@@ -92,26 +92,20 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
   int32_t i = find_next_op(par, from, to, ops, 5);
   if (i != -1)
   {
-    if (par->tok_list->toks[i]->type == TOK_TYPE_SUB)
-    {
-      // TODO: Implement unary minus.
-    }
     mov->op = par->tok_list->toks[i];
     mov->left = malloc(sizeof(node_binary_t));
     mov->right = malloc(sizeof(node_binary_t));
-    node_binary_tree(from, i, par, mov->left);
+    node_binary_tree(from, i - 1, par, mov->left);
     node_binary_tree(i + 1, to, par, mov->right);
+    return;
   }
 
-  if (par->tok_list->toks[from]->type == TOK_TYPE_LPAR && par->tok_list->toks[to - 1]->type == TOK_TYPE_RPAR)
+  if (par->tok_list->toks[to]->type == TOK_TYPE_RPAR && par->tok_list->toks[from]->type == TOK_TYPE_LPAR)
   {
-    if (from != 0 || to != par->tok_list->count)
-    {
-      ++scope;
-      last = from + 1;
-      node_binary_tree(from + 1, to - 1, par, mov);
-      --scope;
-    }
+    ++scope;
+    node_binary_tree(from + 1, to - 1, par, mov);
+    --scope;
+    return;
   }
 }
 

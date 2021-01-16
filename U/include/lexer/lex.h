@@ -17,6 +17,7 @@ typedef struct Lexer
 } lexer_t;
 
 extern lexer_t lex_create(const char *path);
+extern lexer_t lex_create_from_string(const char *str);
 extern void lex_destroy(lexer_t *lex);
 extern void lex_advance(lexer_t *lex);
 

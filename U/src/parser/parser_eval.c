@@ -32,7 +32,7 @@ static struct EvalResult node_binary_eval(node_binary_t *node, struct EvalResult
   return res;
 }
 
-// Evaluates binary tree from leaves up. 
+// Evaluates binary tree from leaves up.
 struct EvalResult node_binary_tree_eval(node_binary_t *mov)
 {
   if (mov->op->type == TOK_TYPE_INT || mov->op->type == TOK_TYPE_FLT)

@@ -117,6 +117,19 @@ lexer_t lex_create(const char *path)
   return lex;
 }
 
+lexer_t lex_create_from_string(const char *str)
+{
+  lexer_t lex;
+  lex.pos.index = -1;
+  lex.pos.column = -1;
+  lex.pos.line = 1;
+  lex.text = strdup(str);
+  lex.pos.file = "<stdin>";
+  lex.size = strlen(lex.text);
+  lex.cur = lex.text;
+  return lex;
+}
+
 void lex_destroy(lexer_t *lex)
 {
   free(lex->text);
@@ -145,6 +158,7 @@ tok_list_t lex_make_toks(lexer_t *lex)
   tok_list_t list;
   list.count = 0;
   const char *file = strdup(lex->pos.file);
+  // list.toks = malloc(sizeof(tok_t*)); // FOR UNITY
   lex->pos.file = NULL;
   while (lex->cur)
   {

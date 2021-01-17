@@ -1,4 +1,5 @@
 # Overview of U language (also plan)
+NOTE: This is not fix yet.
 
 ## Variables
 

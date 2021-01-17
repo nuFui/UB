@@ -115,10 +115,10 @@ static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, uint8_t t
   return smallest_index;
 }
 
-// PEMDAS
+// PEMDSA
 static uint8_t ops[5] = {
-    TOK_TYPE_SUB,
     TOK_TYPE_ADD,
+    TOK_TYPE_SUB,
     TOK_TYPE_DIV,
     TOK_TYPE_MUL,
     TOK_TYPE_POW};

@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     tok_list_print(&list, 1);
     parser_t par = parser_create(&list);
     node_binary_tree_root_init();
-    node_binary_tree(0, par.tok_list->count - 1, &par, *root);
+    node_binary_tree(0, par.tok_list->count, &par, *root);
     struct EvalResult k = node_binary_tree_eval(*root);
     printf("%s = %f\n", lex.text, k.result);
     tok_list_delete(&list);

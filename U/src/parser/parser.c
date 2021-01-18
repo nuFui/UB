@@ -13,7 +13,9 @@ parser_t parser_create(tok_list_t *list)
 void parser_destroy(parser_t *par)
 {
   tok_delete(par->tok_cur);
+  par->tok_cur = NULL;
   tok_list_delete(par->tok_list);
+  par->tok_list = NULL;
 }
 
 // Sets current token to the next one. If there is no next one then current token is NULL.

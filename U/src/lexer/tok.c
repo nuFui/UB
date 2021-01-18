@@ -14,6 +14,7 @@ tok_t tok_create(uint8_t type, const char *value, const char *file)
 void tok_delete(tok_t *tok)
 {
   free(tok->value);
+  tok->file = NULL;
   tok->value = NULL;
 }
 
@@ -91,4 +92,5 @@ void tok_list_delete(tok_list_t *list)
   {
     tok_delete(list->toks[i]);
   }
+  list = NULL;
 }

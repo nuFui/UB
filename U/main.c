@@ -15,11 +15,15 @@ void run_proc(char *argv[], lexer_t (*func)(const char *str))
   node_binary_tree_root_init();
   node_binary_tree(0, par.tok_list->count, &par, *root);
   struct EvalResult k = node_binary_tree_eval(*root);
+  if (k.code == EVAL_FAILURE)
+  {
+    printf("Failed to evaluate.\n");
+    exit(EXIT_SUCCESS);
+  }
   printf("%s = %f\n", lex.text, k.result);
-  tok_list_delete(&list);
   lex_destroy(&lex);
   parser_destroy(&par);
-  node_binary_tree_delete(*root);
+  free(root);
 }
 
 void toks_proc(char *argv[], lexer_t (*func)(const char *str))

@@ -3,7 +3,7 @@
 
 #include "lex_helper.h"
 
-typedef struct LexerPosition
+typedef struct
 {
   uint32_t index;   // Index of current with respect to text.
   uint32_t line;    // Line number

@@ -5,7 +5,8 @@
 
 #include "parser_err.h"
 
-typedef struct Parser {
+typedef struct
+{
   uint32_t tok_index;
   tok_t *tok_cur;
   tok_list_t *tok_list;

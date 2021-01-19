@@ -1,6 +1,6 @@
 #include "../../include/lexer/tok.h"
 
-tok_t tok_create(uint8_t type, const char *value, const char *file)
+tok_t tok_create(tok_type_t type, const char *value, const char *file)
 {
   tok_t t;
   t.type = type;
@@ -18,7 +18,7 @@ void tok_delete(tok_t *tok)
   tok->value = NULL;
 }
 
-void tok_print(tok_t *tok, int newline, int verbose)
+void tok_print(tok_t *tok, bool newline, bool verbose)
 {
   printf("[type: %d ", tok->type);
   if (verbose)
@@ -32,7 +32,7 @@ void tok_print(tok_t *tok, int newline, int verbose)
   }
 }
 
-void tok_copy(tok_t *dest, tok_t *src, int delete_src)
+void tok_copy(tok_t *dest, tok_t *src, bool delete_src)
 {
   dest->type = src->type;
   dest->line = src->line;
@@ -55,16 +55,16 @@ void tok_copy(tok_t *dest, tok_t *src, int delete_src)
   }
 }
 
-void tok_list_print(tok_list_t *list, int verbose)
+void tok_list_print(tok_list_t *list, bool verbose)
 {
   for (int i = 0; i < list->count; ++i)
   {
-    tok_print(list->toks[i], 1, verbose);
+    tok_print(list->toks[i], true, verbose);
   }
 }
 
 // NOTE: delete_src deletes the tokens in the src if 1.
-void tok_list_copy(tok_list_t *dest, tok_list_t *src, int delete_src)
+void tok_list_copy(tok_list_t *dest, tok_list_t *src, bool delete_src)
 {
   dest->count = src->count;
   for (int i = 0; i < src->count; ++i)

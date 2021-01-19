@@ -10,10 +10,10 @@ void node_binary_tree_root_init()
 }
 
 // Finds next operator pivot in types[] in the current scope.
-static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, uint8_t types[], uint8_t types_count)
+static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, tok_type_t types[], uint8_t types_count)
 {
   uint8_t scp = scope;
-  uint8_t smallest = TOK_TYPE_DUMMY_MAX;
+  tok_type_t smallest = TOK_TYPE_DUMMY_MAX;
   int32_t smallest_index = -1;
   while (from < to)
   {
@@ -65,7 +65,7 @@ static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, uint8_t t
 }
 
 // PEMDSA
-static uint8_t ops[5] = {
+static tok_type_t ops[5] = {
     TOK_TYPE_ADD,
     TOK_TYPE_SUB,
     TOK_TYPE_DIV,
@@ -133,7 +133,7 @@ void node_binary_tree_print(node_binary_t *mov)
 {
   if (!mov)
     return;
-  tok_print(mov->op, 1, 1);
+  tok_print(mov->op, true, true);
   node_binary_tree_print(mov->left);
   node_binary_tree_print(mov->right);
 }

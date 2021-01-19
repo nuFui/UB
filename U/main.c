@@ -14,7 +14,7 @@ void run_proc(char *argv[], lexer_t (*func)(const char *str))
   parser_t par = parser_create(&list);
   node_binary_tree_root_init();
   node_binary_tree(0, par.tok_list->count, &par, *root);
-  struct EvalResult k = node_binary_tree_eval(*root);
+  eval_result_t k = node_binary_tree_eval(*root);
   if (k.code == EVAL_FAILURE)
   {
     printf("Failed to evaluate.\n");

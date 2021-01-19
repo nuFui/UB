@@ -5,7 +5,8 @@
 
 #include "parser.h"
 
-typedef struct NodeBinary {
+typedef struct NodeBinary
+{
   tok_t *op;
   struct NodeBinary *left;
   struct NodeBinary *right;

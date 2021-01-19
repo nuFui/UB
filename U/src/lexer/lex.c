@@ -153,17 +153,26 @@ void lex_advance(lexer_t *lex)
   }
 }
 
+static uint32_t count_tokens(lexer_t *lex) {
+  uint32_t count = 0;
+  while (lex->cur) {
+
+    ++count;
+  }
+}
+
 // Given lexer creates the list of tokens for lex->file.
 // Can raise error if heap-allocation fails.
 tok_list_t lex_make_toks(lexer_t *lex)
 {
   tok_list_t list;
   list.count = 0;
-  const char *file = strdup(lex->pos.file);
-  if (!strcmp(file, "<stdin>"))
+  list.toks = malloc(sizeof(tok_t*));
+  const char *file = lex->pos.file;
+  /*if (!strcmp(file, "<stdin>"))
   {
     list.toks = malloc(sizeof(tok_t *));
-  }
+  }*/
   lex->pos.file = NULL;
   while (lex->cur)
   {

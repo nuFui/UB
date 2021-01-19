@@ -8,7 +8,7 @@
 
 #define APPEND_EOF 1
 
-typedef struct Lexer
+typedef struct
 {
   char *cur;       // Cursor or current character in analysis.
   lexer_pos_t pos; // Information about position when performing lexical analysis.

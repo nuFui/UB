@@ -3,18 +3,19 @@
 
 #include "parser_node.h"
 
-enum EvalResultCode
+typedef enum
 {
   EVAL_SUCCESS,
-  EVAL_FAILURE
-};
+  EVAL_FAILURE,
+  EVAL_DIVZERO,
+} eval_result_code_t;
 
-struct EvalResult
+typedef struct
 {
-  enum EvalResultCode code;
+  eval_result_code_t code;
   float result;
-};
+} eval_result_t;
 
-extern struct EvalResult node_binary_tree_eval(node_binary_t *mov);
+extern eval_result_t node_binary_tree_eval(node_binary_t *mov);
 
 #endif

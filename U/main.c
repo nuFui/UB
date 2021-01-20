@@ -23,7 +23,7 @@ void run_proc(char *argv[], lexer_t (*func)(const char *str))
   printf("%s = %f\n", lex.text, k.result);
   lex_destroy(&lex);
   parser_destroy(&par);
-  free(root);
+  node_binary_tree_root_deinit(root);
 }
 
 void toks_proc(char *argv[], lexer_t (*func)(const char *str))

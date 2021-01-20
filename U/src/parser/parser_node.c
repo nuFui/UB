@@ -9,6 +9,12 @@ void node_binary_tree_root_init()
   *root = malloc(sizeof(node_binary_t));
 }
 
+void node_binary_tree_root_deinit()
+{
+  free(*root);
+  free(root);
+}
+
 // Finds next operator pivot in types[] in the current scope.
 static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, tok_type_t types[], uint8_t types_count)
 {

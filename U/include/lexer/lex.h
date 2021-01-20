@@ -6,7 +6,7 @@
 #include "lex_pos.h"
 #include "tok.h"
 
-#define APPEND_EOF 1
+#define APPEND_EOF 0
 
 typedef struct
 {

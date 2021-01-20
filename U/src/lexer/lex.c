@@ -39,10 +39,13 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
 }
 
 // Creates token given lexer, can raise error if illegal character was found.
-static tok_t lex_make_tok(lexer_t *lex)
+static tok_t *lex_make_tok(lexer_t *lex)
 {
-  tok_t tok = {-1, lex->pos.line, lex->pos.column};
-  tok.value = NULL;
+  tok_t *tok = malloc(sizeof(tok_t));
+  tok->type = -1;
+  tok->line = lex->pos.line;
+  tok->column = lex->pos.column;
+  tok->value = NULL;
   while (lex->cur)
   {
     switch (*lex->cur)
@@ -62,34 +65,34 @@ static tok_t lex_make_tok(lexer_t *lex)
     case '8':
     case '9':
     case '.':;
-      lex_make_number(lex, &tok);
+      lex_make_number(lex, tok);
       goto ret;
     case '+':
-      tok.type = TOK_TYPE_ADD;
+      tok->type = TOK_TYPE_ADD;
       lex_advance(lex);
       goto ret;
     case '-':
-      tok.type = TOK_TYPE_SUB;
+      tok->type = TOK_TYPE_SUB;
       lex_advance(lex);
       goto ret;
     case '*':
-      tok.type = TOK_TYPE_MUL;
+      tok->type = TOK_TYPE_MUL;
       lex_advance(lex);
       goto ret;
     case '/':
-      tok.type = TOK_TYPE_DIV;
+      tok->type = TOK_TYPE_DIV;
       lex_advance(lex);
       goto ret;
     case '^':
-      tok.type = TOK_TYPE_POW;
+      tok->type = TOK_TYPE_POW;
       lex_advance(lex);
       goto ret;
     case '(':
-      tok.type = TOK_TYPE_LPAR;
+      tok->type = TOK_TYPE_LPAR;
       lex_advance(lex);
       goto ret;
     case ')':
-      tok.type = TOK_TYPE_RPAR;
+      tok->type = TOK_TYPE_RPAR;
       lex_advance(lex);
       goto ret;
     default:;
@@ -110,7 +113,7 @@ lexer_t lex_create(const char *path)
   lex.pos.index = -1;
   lex.pos.column = -1;
   lex.pos.line = 1;
-  lex.pos.file = path;
+  lex.pos.file = path; // Not obtained through malloc() => dont free the file name buffer.
   lex_helper_read_file(path, &lex.text, &lex.size);
   lex.cur = lex.text;
   lex_advance(&lex);
@@ -124,7 +127,7 @@ lexer_t lex_create_from_string(const char *str)
   lex.pos.column = -1;
   lex.pos.line = 1;
   lex.text = strdup(str);
-  lex.pos.file = "<stdin>";
+  lex.pos.file = "<stdin>"; // Do not malloc(), string literal handled by compiler.
   lex.size = strlen(lex.text);
   lex.cur = lex.text;
   lex_advance(&lex);
@@ -134,8 +137,6 @@ lexer_t lex_create_from_string(const char *str)
 void lex_destroy(lexer_t *lex)
 {
   free(lex->text);
-  free((char *)lex->pos.file);
-  lex->pos.file = NULL;
   lex->text = NULL;
 }
 
@@ -153,27 +154,20 @@ void lex_advance(lexer_t *lex)
   }
 }
 
-static uint32_t count_tokens(lexer_t *lex) {
-  uint32_t count = 0;
-  while (lex->cur) {
-
-    ++count;
-  }
-}
-
 // Given lexer creates the list of tokens for lex->file.
 // Can raise error if heap-allocation fails.
 tok_list_t lex_make_toks(lexer_t *lex)
 {
   tok_list_t list;
   list.count = 0;
-  list.toks = malloc(sizeof(tok_t*));
-  const char *file = lex->pos.file;
-  /*if (!strcmp(file, "<stdin>"))
+  list.toks = malloc(sizeof(tok_t *));
+  if (!list.toks)
   {
-    list.toks = malloc(sizeof(tok_t *));
-  }*/
-  lex->pos.file = NULL;
+    free(list.toks);
+    lex_destroy(lex);
+    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
+    error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
+  }
   while (lex->cur)
   {
     list.toks[list.count] = malloc(sizeof(tok_t));
@@ -184,8 +178,8 @@ tok_list_t lex_make_toks(lexer_t *lex)
       error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
       error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
     }
-    *list.toks[list.count] = lex_make_tok(lex);
-    list.toks[list.count]->file = file;
+    list.toks[list.count] = lex_make_tok(lex);
+    list.toks[list.count]->file = lex->pos.file;
     ++list.count;
   }
 #if APPEND_EOF

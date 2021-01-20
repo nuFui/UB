@@ -5,10 +5,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "../common/error.h"
 
-enum
+typedef enum
 {
   TOK_TYPE_ADD,
   TOK_TYPE_SUB,
@@ -21,30 +22,30 @@ enum
   TOK_TYPE_FLT,
   TOK_TYPE_EOF,
   TOK_TYPE_DUMMY_MAX
-};
+} tok_type_t;
 
-typedef struct Tok
+typedef struct
 {
-  uint8_t type;
+  tok_type_t type;
   uint32_t line;
   uint32_t column;
   const char *file;
   char *value;
 } tok_t;
 
-typedef struct TokList
+typedef struct
 {
   uint32_t count;
   tok_t **toks;
 } tok_list_t;
 
-extern tok_t tok_create(uint8_t type, const char *value, const char *file);
+extern tok_t tok_create(tok_type_t type, const char *value, const char *file);
 extern void tok_delete(tok_t *tok);
-extern void tok_print(tok_t *tok, int newline, int verbose);
-extern void tok_copy(tok_t *dest, tok_t *src, int delete_src);
+extern void tok_print(tok_t *tok, bool newline, bool verbose);
+extern void tok_copy(tok_t *dest, tok_t *src, bool delete_src);
 
-extern void tok_list_print(tok_list_t *list, int verbose);
-extern void tok_list_copy(tok_list_t *dest, tok_list_t *src, int delete_src);
+extern void tok_list_print(tok_list_t *list, bool verbose);
+extern void tok_list_copy(tok_list_t *dest, tok_list_t *src, bool delete_src);
 extern void tok_list_delete(tok_list_t *list);
 
 #endif

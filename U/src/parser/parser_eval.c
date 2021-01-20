@@ -1,11 +1,11 @@
 #include "../../include/parser/parser_eval.h"
 
 // Evaluates binary operation given left, right operand and the node->op->type.
-static struct EvalResult node_binary_eval(node_binary_t *node, struct EvalResult left, struct EvalResult right)
+static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, eval_result_t right)
 {
-  struct EvalResult res;
-  res.result = -1;
-  res.code = EVAL_SUCCESS;
+  eval_result_t res = {
+      EVAL_SUCCESS,
+      -1};
   switch (node->op->type)
   {
   case TOK_TYPE_ADD:
@@ -20,32 +20,29 @@ static struct EvalResult node_binary_eval(node_binary_t *node, struct EvalResult
   case TOK_TYPE_DIV:
     if (right.result == 0)
     {
-      res.code = EVAL_FAILURE;
+      res.code = EVAL_DIVZERO;
       return res;
     }
     res.result = left.result / right.result;
     break;
   case TOK_TYPE_POW:
     res.result = pow(left.result, right.result);
-    break;
   }
   return res;
 }
 
 // Evaluates binary tree from leaves up.
-struct EvalResult node_binary_tree_eval(node_binary_t *mov)
+eval_result_t node_binary_tree_eval(node_binary_t *mov)
 {
   if (mov->op->type == TOK_TYPE_INT || mov->op->type == TOK_TYPE_FLT)
   {
-    struct EvalResult ret;
-    ret.code = EVAL_SUCCESS;
-    ret.result = atof(mov->op->value);
+    eval_result_t ret = {
+        EVAL_SUCCESS,
+        atof(mov->op->value)};
     return ret;
   }
-  struct EvalResult l = node_binary_tree_eval(mov->left);
-  struct EvalResult r = node_binary_tree_eval(mov->right);
-  struct EvalResult s = node_binary_eval(mov, l, r);
-  if (s.code == EVAL_FAILURE)
+  eval_result_t s = node_binary_eval(mov, node_binary_tree_eval(mov->left), node_binary_tree_eval(mov->right));
+  if (s.code != EVAL_SUCCESS)
   {
     node_binary_tree_delete(*root);
     exit(EXIT_FAILURE);

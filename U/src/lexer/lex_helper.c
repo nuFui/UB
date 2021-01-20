@@ -10,7 +10,7 @@ uint8_t lex_helper_read_file(const char *path, char **buffer, uint32_t *size)
 #endif
   if (!file)
   {
-    free(file);
+    fclose(file);
     error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
     error_raise(&error_fatal, &pos, "Could not open file '%s'", path);
     return 1;

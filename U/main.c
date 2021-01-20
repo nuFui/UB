@@ -14,7 +14,7 @@ void run_proc(char *argv[], lexer_t (*func)(const char *str))
   parser_t par = parser_create(&list);
   node_binary_tree_root_init();
   node_binary_tree(0, par.tok_list->count, &par, *root);
-  struct EvalResult k = node_binary_tree_eval(*root);
+  eval_result_t k = node_binary_tree_eval(*root);
   if (k.code == EVAL_FAILURE)
   {
     printf("Failed to evaluate.\n");
@@ -23,7 +23,7 @@ void run_proc(char *argv[], lexer_t (*func)(const char *str))
   printf("%s = %f\n", lex.text, k.result);
   lex_destroy(&lex);
   parser_destroy(&par);
-  free(root);
+  node_binary_tree_root_deinit(root);
 }
 
 void toks_proc(char *argv[], lexer_t (*func)(const char *str))
@@ -35,9 +35,28 @@ void toks_proc(char *argv[], lexer_t (*func)(const char *str))
   lex_destroy(&lex);
 }
 
+void repl_proc(char *line, lexer_t (*func)(const char *str))
+{
+  lexer_t lex = func(line);
+  tok_list_t list = lex_make_toks(&lex);
+  parser_t par = parser_create(&list);
+  node_binary_tree_root_init();
+  node_binary_tree(0, par.tok_list->count, &par, *root);
+  eval_result_t k = node_binary_tree_eval(*root);
+  if (k.code == EVAL_FAILURE)
+  {
+    printf("Failed to evaluate.\n");
+    exit(EXIT_SUCCESS);
+  }
+  printf("%s = %f\n", lex.text, k.result);
+  lex_destroy(&lex);
+  parser_destroy(&par);
+  node_binary_tree_root_deinit(root);
+}
+
 int main(int argc, char *argv[])
 {
-  if (argc < 4)
+  if (argc < 2)
   {
     // Handle error.
     exit(EXIT_FAILURE);
@@ -45,51 +64,78 @@ int main(int argc, char *argv[])
   // TODO: Argument parser.
   if (!strcmp(argv[1], "run"))
   {
-    if (!strcmp(argv[2], "-f"))
+    if (argc > 2)
     {
-      // For files.
-      if (!access(argv[3], F_OK))
+      if (!strcmp(argv[2], "-f"))
       {
-        // File exists => proceed with evaluation.
-        run_proc(argv, lex_create);
+        // For files.
+        if (!access(argv[3], F_OK))
+        {
+          // File exists => proceed with evaluation.
+          run_proc(argv, lex_create);
+        }
+        else
+        {
+          // File does not exist => exit with 1.
+          exit(EXIT_FAILURE);
+        }
+      }
+      else if (!strcmp(argv[2], "-s"))
+      {
+        // For strings.
+        run_proc(argv, lex_create_from_string);
       }
       else
       {
-        // File does not exist => exit with 1.
         exit(EXIT_FAILURE);
       }
-    }
-    else if (!strcmp(argv[2], "-s"))
-    {
-      // For strings.
-      run_proc(argv, lex_create_from_string);
-    }
-    else
-    {
-      exit(EXIT_FAILURE);
     }
   }
   else if (!strcmp(argv[1], "toks"))
   {
-    if (!strcmp(argv[2], "-f"))
+    if (argc > 2)
     {
-      if (!access(argv[2], F_OK))
+      if (!strcmp(argv[2], "-f"))
       {
-        toks_proc(argv, lex_create);
+        if (!access(argv[2], F_OK))
+        {
+          toks_proc(argv, lex_create);
+        }
+        else
+        {
+          exit(EXIT_FAILURE);
+        }
+      }
+      else if (!strcmp(argv[2], "-s"))
+      {
+        toks_proc(argv, lex_create_from_string);
       }
       else
       {
         exit(EXIT_FAILURE);
       }
     }
-    else if (!strcmp(argv[2], "-s"))
+  }
+  else if (!strcmp(argv[1], "repl"))
+  {
+    printf("stormout() to exit\n");
+    char *str = NULL;
+    ssize_t len = 0;
+    int read = 0;
+    do
     {
-      toks_proc(argv, lex_create_from_string);
-    }
-    else
-    {
-      exit(EXIT_FAILURE);
-    }
+      printf("> ");
+      read = getline(&str, &len, stdin);
+      if (!strcmp("stormout()\n", str) || read == -1)
+      {
+        free(str);
+        str = NULL;
+        break;
+      }
+      repl_proc(str, lex_create_from_string);
+      free(str);
+      str = NULL;
+    } while (true);
   }
   else
   {

@@ -52,7 +52,13 @@ static tok_t *lex_make_tok(lexer_t *lex)
     {
     case ' ':
     case '\t':
+    case '\n':
       lex_advance(lex);
+      if (!lex->cur)
+      {
+        free(tok);
+        return NULL;
+      }
       break;
     case '0':
     case '1':
@@ -179,6 +185,12 @@ tok_list_t lex_make_toks(lexer_t *lex)
       error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
     }
     list.toks[list.count] = lex_make_tok(lex);
+    if (!list.toks[list.count])
+    {
+      free(list.toks[list.count]);
+      list.toks[list.count] = NULL;
+      return list;
+    }
     list.toks[list.count]->file = lex->pos.file;
     ++list.count;
   }

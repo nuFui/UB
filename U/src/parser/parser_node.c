@@ -12,7 +12,9 @@ void node_binary_tree_root_init()
 void node_binary_tree_root_deinit()
 {
   free(*root);
+  *root = NULL;
   free(root);
+  root = NULL;
 }
 
 // Finds next operator pivot in types[] in the current scope.
@@ -51,6 +53,7 @@ static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, tok_type_
           goto small;
         }
       }
+      // TODO: Yes error.
       ++from;
       continue;
     small:

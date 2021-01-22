@@ -6,8 +6,6 @@
 #include "lex_pos.h"
 #include "tok.h"
 
-#define APPEND_EOF 0
-
 typedef struct
 {
   char *cur;       // Cursor or current character in analysis.
@@ -21,6 +19,6 @@ extern lexer_t lex_create_from_string(const char *str);
 extern void lex_destroy(lexer_t *lex);
 extern void lex_advance(lexer_t *lex);
 
-extern tok_list_t lex_make_toks(lexer_t *lex);
+extern tok_list_t *lex_make_toks(lexer_t *lex);
 
 #endif

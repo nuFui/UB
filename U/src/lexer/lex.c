@@ -39,9 +39,9 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
 }
 
 // Creates token given lexer, can raise error if illegal character was found.
-static tok_t *lex_make_tok(lexer_t *lex)
+static void lex_make_tok(tok_t *tok, lexer_t *lex)
 {
-  tok_t *tok = malloc(sizeof(tok_t));
+  tok = malloc(sizeof(tok_t));
   tok->type = -1;
   tok->line = lex->pos.line;
   tok->column = lex->pos.column;
@@ -56,8 +56,7 @@ static tok_t *lex_make_tok(lexer_t *lex)
       lex_advance(lex);
       if (!lex->cur)
       {
-        free(tok);
-        return NULL;
+        tok = NULL;
       }
       break;
     case '0':
@@ -109,7 +108,7 @@ static tok_t *lex_make_tok(lexer_t *lex)
     }
   }
 ret:
-  return tok;
+  return;
 }
 
 // Return new lexer object coupled with path to file it is lexing.
@@ -162,49 +161,26 @@ void lex_advance(lexer_t *lex)
 
 // Given lexer creates the list of tokens for lex->file.
 // Can raise error if heap-allocation fails.
-tok_list_t lex_make_toks(lexer_t *lex)
+tok_list_t *lex_make_toks(lexer_t *lex)
 {
-  tok_list_t list;
-  list.count = 0;
-  list.toks = malloc(sizeof(tok_t *));
-  if (!list.toks)
-  {
-    free(list.toks);
-    lex_destroy(lex);
-    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
-    error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
-  }
+  tok_list_t *list;
+  list = malloc(sizeof(tok_list_t) + TOK_MAX * sizeof(tok_t *));
+  list->count = 0;
   while (lex->cur)
   {
-    list.toks[list.count] = malloc(sizeof(tok_t));
-    if (!list.toks[list.count])
+    if (list->count > TOK_MAX)
     {
-      free(list.toks[list.count]);
-      lex_destroy(lex);
-      error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
-      error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
+      list = realloc(list, sizeof(tok_list_t) + list->count * sizeof(tok_t *));
     }
-    list.toks[list.count] = lex_make_tok(lex);
-    if (!list.toks[list.count])
+    lex_make_tok(list->toks[list->count], lex);
+    if (!list->toks[list->count])
     {
-      free(list.toks[list.count]);
-      list.toks[list.count] = NULL;
+      free(list->toks[list->count]);
+      list->toks[list->count] = NULL;
       return list;
     }
-    list.toks[list.count]->file = lex->pos.file;
-    ++list.count;
+    list->toks[list->count]->file = lex->pos.file;
+    ++list->count;
   }
-#if APPEND_EOF
-  list.toks[list.count] = malloc(sizeof(tok_t));
-  if (!list.toks[list.count])
-  {
-    free(list.toks[list.count]);
-    lex_destroy(lex);
-    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
-    error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
-  }
-  list.toks[list.count]->type = TOK_TYPE_EOF;
-  list.toks[list.count]->value = NULL;
-#endif
   return list;
 }

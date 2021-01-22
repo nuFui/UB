@@ -9,6 +9,8 @@
 
 #include "../common/error.h"
 
+#define TOK_MAX 100
+
 typedef enum
 {
   TOK_TYPE_ADD,
@@ -36,7 +38,7 @@ typedef struct
 typedef struct
 {
   uint32_t count;
-  tok_t **toks;
+  tok_t *toks[];
 } tok_list_t;
 
 extern tok_t tok_create(tok_type_t type, const char *value, const char *file);

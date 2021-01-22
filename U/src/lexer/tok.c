@@ -91,6 +91,7 @@ void tok_list_delete(tok_list_t *list)
   for (int i = 0; i < list->count; ++i)
   {
     tok_delete(list->toks[i]);
+    list->toks[i] = NULL;
   }
   list = NULL;
 }

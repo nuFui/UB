@@ -156,7 +156,7 @@ void lex_advance(lexer_t *lex)
 }
 
 #define APPEND_EOF 1
-#define COUNT_EOF 0
+#define COUNT_EOF 1
 
 // Given lexer creates the list of tokens for lex->file.
 // Can raise error if heap-allocation fails.

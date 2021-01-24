@@ -18,7 +18,8 @@ static void check_tokens(parser_t *par)
       case TOK_TYPE_DIV:
       case TOK_TYPE_MUL:
       case TOK_TYPE_POW:
-      case TOK_TYPE_RPAR:;
+      case TOK_TYPE_RPAR:
+      case TOK_TYPE_EOF:;
         parser_err_invalid_syntax peis = {{par->tok_list->toks[i + 1],
                                            "ErrInvalidSyntax",
                                            "Found '%s' after '%s', expected '(', literal or identifier"}};

@@ -5,12 +5,12 @@
 
 #include "parser_err.h"
 
-typedef struct
+struct Parser
 {
-  uint32_t tok_index;
+  int tok_index;
   tok_t *tok_cur;
   tok_list_t *tok_list;
-} parser_t;
+};
 
 extern parser_t parser_create(tok_list_t *list);
 extern void parser_destroy(parser_t *par);

@@ -5,8 +5,8 @@
 // Function cleans up lexer and token if error is triggered.
 static void lex_make_number(lexer_t *lex, tok_t *tok)
 {
-  uint8_t dot_count = 0;
-  uint32_t size = 0;
+  int dot_count = 0;
+  int size = 0;
   char *f = lex->cur;
   while (lex->cur && (isdigit(*lex->cur) || *lex->cur == '.'))
   {
@@ -30,7 +30,7 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
   {
     lex_destroy(lex);
     tok_delete(tok);
-    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
     error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
   }
   strncpy(tok->value, f, size);
@@ -39,9 +39,9 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
 }
 
 // Creates token given lexer, can raise error if illegal character was found.
-static void lex_make_tok(tok_t *tok, lexer_t *lex)
+static tok_t *lex_make_tok(lexer_t *lex)
 {
-  tok = malloc(sizeof(tok_t));
+  tok_t *tok = malloc(sizeof(tok_t));
   tok->type = -1;
   tok->line = lex->pos.line;
   tok->column = lex->pos.column;
@@ -54,10 +54,6 @@ static void lex_make_tok(tok_t *tok, lexer_t *lex)
     case '\t':
     case '\n':
       lex_advance(lex);
-      if (!lex->cur)
-      {
-        tok = NULL;
-      }
       break;
     case '0':
     case '1':
@@ -108,7 +104,7 @@ static void lex_make_tok(tok_t *tok, lexer_t *lex)
     }
   }
 ret:
-  return;
+  return tok;
 }
 
 // Return new lexer object coupled with path to file it is lexing.
@@ -132,7 +128,7 @@ lexer_t lex_create_from_string(const char *str)
   lex.pos.column = -1;
   lex.pos.line = 1;
   lex.text = strdup(str);
-  lex.pos.file = "<stdin>"; // Do not malloc(), string literal handled by compiler.
+  lex.pos.file = "<stdin>"; // Do not free(), string literal handled by compiler.
   lex.size = strlen(lex.text);
   lex.cur = lex.text;
   lex_advance(&lex);
@@ -159,20 +155,32 @@ void lex_advance(lexer_t *lex)
   }
 }
 
+#define APPEND_EOF 1
+#define COUNT_EOF 0
+
 // Given lexer creates the list of tokens for lex->file.
 // Can raise error if heap-allocation fails.
 tok_list_t *lex_make_toks(lexer_t *lex)
 {
-  tok_list_t *list;
-  list = malloc(sizeof(tok_list_t) + TOK_MAX * sizeof(tok_t *));
+  tok_list_t *list = malloc(0);
+  if (!list)
+  {
+    lex_destroy(lex);
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
+    error_raise(error_memory, &pos, "Could not allocate sufficient memory");
+  }
   list->count = 0;
   while (lex->cur)
   {
-    if (list->count > TOK_MAX)
+    // Might not want to alloc, see https://stackoverflow.com/questions/8436898/realloc-invalid-next-size-when-reallocating-to-make-space-for-strcat-on-char
+    list = realloc(list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
+    if (!list)
     {
-      list = realloc(list, sizeof(tok_list_t) + list->count * sizeof(tok_t *));
+      lex_destroy(lex);
+      error_pos_t pos = {__FILE__, __func__, __LINE__};
+      error_raise(error_memory, &pos, "Could not allocate sufficient memory");
     }
-    lex_make_tok(list->toks[list->count], lex);
+    list->toks[list->count] = lex_make_tok(lex);
     if (!list->toks[list->count])
     {
       free(list->toks[list->count]);
@@ -182,5 +190,19 @@ tok_list_t *lex_make_toks(lexer_t *lex)
     list->toks[list->count]->file = lex->pos.file;
     ++list->count;
   }
+#if APPEND_EOF
+  list = realloc(list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
+  if (!list)
+  {
+    lex_destroy(lex);
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
+    error_raise(error_memory, &pos, "Could not allocate sufficient memory");
+  }
+  list->toks[list->count] = malloc(sizeof(tok_t));
+  list->toks[list->count]->type = TOK_TYPE_EOF;
+#if COUNT_EOF && APPEND_EOF
+  ++list->count;
+#endif
+#endif
   return list;
 }

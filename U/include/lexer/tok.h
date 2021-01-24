@@ -2,7 +2,6 @@
 #define __LEXER_TOK_H__
 
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -29,15 +28,15 @@ typedef enum
 typedef struct
 {
   tok_type_t type;
-  uint32_t line;
-  uint32_t column;
+  int line;
+  int column;
   const char *file;
   char *value;
 } tok_t;
 
 typedef struct
 {
-  uint32_t count;
+  int count;
   tok_t *toks[];
 } tok_list_t;
 

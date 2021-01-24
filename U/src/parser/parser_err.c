@@ -27,12 +27,13 @@ void parser_err_vprint(parser_err_base_t *err, va_list details)
   fprintf(stderr, ".%s\n", RESET);
 }
 
-void parser_err_raise(parser_err_base_t *err, ...)
+void parser_err_raise(parser_err_base_t *err, parser_t *par, ...)
 {
   va_list args;
-  va_start(args, err);
+  va_start(args, par);
   parser_err_vprint(err, args);
   va_end(args);
+  parser_destroy(par);
   exit(EXIT_FAILURE);
 }
 

@@ -10,7 +10,7 @@ typedef struct
 {
   char *cur;       // Cursor or current character in analysis.
   lexer_pos_t pos; // Information about position when performing lexical analysis.
-  uint32_t size;   // Size of text in bytes.
+  int size;   // Size of text in bytes.
   char *text;      // Source buffer.
 } lexer_t;
 

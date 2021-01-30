@@ -1,7 +1,7 @@
-#include "include/lexer/lex.h"
-#include "include/parser/parser.h"
-#include "include/parser/parser_node.h"
-#include "include/parser/parser_eval.h"
+#include "../../include/lexer/lex.h"
+#include "../../include/parser/parser.h"
+#include "../../include/parser/parser_node.h"
+#include "../../include/parser/parser_eval.h"
 
 #include <dirent.h>
 #include <errno.h>
@@ -132,6 +132,7 @@ int main(int argc, char *argv[])
         str = NULL;
         break;
       }
+      str[read - 1] = '\0';
       repl_proc(str, lex_create_from_string);
       free(str);
       str = NULL;

@@ -2,3 +2,5 @@
 .vscode/
 U/main
 U/parser_eval_test
+U/build
+U/bin

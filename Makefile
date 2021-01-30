@@ -1,28 +1,26 @@
 CC = gcc
 CFLAGS = -g
+LDFLAGS = -lm
 
-SRC_COMMON = $(wildcard U/src/common/*.c)
-SRC_LEXER = $(wildcard U/src/lexer/*.c)
-SRC_PARSER = $(wildcard U/src/parser/*.c)
-SRC_MUNIT = U/src/test/U/test/munit/munit.c
-SRC = U/src/test/parser_node_test.c
+export UROOT = $(shell pwd)
+export UBUILD = $(UROOT)/U/build
+export UBIN = $(UROOT)/U/bin
 
-SRCS = $(SRC_COMMON) $(SRC_LEXER) $(SRC_PARSER) $(SRC_MUNIT) $(SRC)
+SOURCES := $(shell find $(UROOT)/U/src -name *.c)
+OBJECTS = $(addprefix $(UBUILD)/,$(notdir $(SOURCES:%.c=%.o)))
+BINARY = $(UBIN)/U
 
-BIN = U/src/test/bin/
+collect_objects:
+	+$(MAKE) -C $(UROOT)/U/src/common
+	+$(MAKE) -C $(UROOT)/U/src/lexer
+	+$(MAKE) -C $(UROOT)/U/src/parser
+	$(MAKE) $(BINARY)
 
-all: parser_node_test
+all: collect_objects
+	$(info Completed linking of $(shell pwd))
 
-parser_node_test: %: %.o
-
-
-%: %.o
-	$(CC) $^ U/src/test/$@
-	
-
-%.o: %.c
-	$(CC) -c $(CFLAGS) $< -o $(BIN)$@
-
+$(BINARY): $(OBJECTS)
+	$(CC) $(CFLAGS) $(OBJECTS) $(LDFLAGS) -o $(BINARY)
 
 clean:
-	rm -f $(BIN)*.o
+	rm -f $(OBJECTS) $(BINARY)

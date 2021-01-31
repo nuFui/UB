@@ -1,7 +1,7 @@
 #include "../../include/parser/parser_node.h"
 
 node_binary_t **root = NULL;
-static uint8_t scope = 0;
+static int scope = 0;
 
 void node_binary_tree_root_init()
 {
@@ -12,15 +12,17 @@ void node_binary_tree_root_init()
 void node_binary_tree_root_deinit()
 {
   free(*root);
+  *root = NULL;
   free(root);
+  root = NULL;
 }
 
 // Finds next operator pivot in types[] in the current scope.
-static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, tok_type_t types[], uint8_t types_count)
+static int find_next_op(parser_t *par, int from, int to, tok_type_t types[], int types_count)
 {
-  uint8_t scp = scope;
+  int scp = scope;
   tok_type_t smallest = TOK_TYPE_DUMMY_MAX;
-  int32_t smallest_index = -1;
+  int smallest_index = -1;
   while (from < to)
   {
     switch (par->tok_list->toks[from]->type)
@@ -51,6 +53,7 @@ static int32_t find_next_op(parser_t *par, uint32_t from, uint32_t to, tok_type_
           goto small;
         }
       }
+      // TODO: Yes error.
       ++from;
       continue;
     small:
@@ -86,7 +89,7 @@ static tok_type_t ops[5] = {
 //      /   |  \       /   |   \
 //  NULL   2   NULL  NULL  4  NULL
 
-void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *mov)
+void node_binary_tree(int from, int to, parser_t *par, node_binary_t *mov)
 {
   mov->op = NULL;
   mov->left = NULL;
@@ -101,7 +104,7 @@ void node_binary_tree(uint32_t from, uint32_t to, parser_t *par, node_binary_t *
     }
   }
 
-  int32_t i = find_next_op(par, from, to, ops, 5);
+  int i = find_next_op(par, from, to, ops, 5);
   if (i != -1)
   {
     mov->op = par->tok_list->toks[i];

@@ -5,9 +5,9 @@
 
 typedef struct
 {
-  uint32_t index;   // Index of current with respect to text.
-  uint32_t line;    // Line number
-  uint32_t column;  // Column number
+  int index;        // Index of current with respect to text.
+  int line;         // Line number
+  int column;       // Column number
   const char *file; // File name
 } lexer_pos_t;
 

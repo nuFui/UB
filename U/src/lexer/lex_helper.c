@@ -2,7 +2,7 @@
 
 // Reads file contents info a null-terminated string on the heap.
 // Can raise heap-allocation error if fail.
-uint8_t lex_helper_read_file(const char *path, char **buffer, uint32_t *size)
+int lex_helper_read_file(const char *path, char **buffer, int *size)
 {
   FILE *file = fopen(path, "r");
 #if TEST_ERRFATAL
@@ -11,7 +11,7 @@ uint8_t lex_helper_read_file(const char *path, char **buffer, uint32_t *size)
   if (!file)
   {
     fclose(file);
-    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
     error_raise(&error_fatal, &pos, "Could not open file '%s'", path);
     return 1;
   }
@@ -27,7 +27,7 @@ uint8_t lex_helper_read_file(const char *path, char **buffer, uint32_t *size)
   {
     free(*buffer);
     fclose(file);
-    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
     error_raise(&error_memory, &pos, "Could not allocate sufficient memory for '%p'", buffer);
     return 1;
   }

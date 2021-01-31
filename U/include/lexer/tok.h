@@ -2,12 +2,13 @@
 #define __LEXER_TOK_H__
 
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
 
 #include "../common/error.h"
+
+#define TOK_MAX 100
 
 typedef enum
 {
@@ -27,16 +28,16 @@ typedef enum
 typedef struct
 {
   tok_type_t type;
-  uint32_t line;
-  uint32_t column;
+  int line;
+  int column;
   const char *file;
   char *value;
 } tok_t;
 
 typedef struct
 {
-  uint32_t count;
-  tok_t **toks;
+  int count;
+  tok_t *toks[];
 } tok_list_t;
 
 extern tok_t tok_create(tok_type_t type, const char *value, const char *file);

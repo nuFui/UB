@@ -10,8 +10,8 @@
 void run_proc(char *argv[], lexer_t (*func)(const char *str))
 {
   lexer_t lex = func(argv[3]);
-  tok_list_t list = lex_make_toks(&lex);
-  parser_t par = parser_create(&list);
+  tok_list_t *list = lex_make_toks(&lex);
+  parser_t par = parser_create(list);
   node_binary_tree_root_init();
   node_binary_tree(0, par.tok_list->count, &par, *root);
   eval_result_t k = node_binary_tree_eval(*root);
@@ -29,17 +29,17 @@ void run_proc(char *argv[], lexer_t (*func)(const char *str))
 void toks_proc(char *argv[], lexer_t (*func)(const char *str))
 {
   lexer_t lex = func(argv[3]);
-  tok_list_t list = lex_make_toks(&lex);
-  tok_list_print(&list, 1);
-  tok_list_delete(&list);
+  tok_list_t *list = lex_make_toks(&lex);
+  tok_list_print(list, 1);
+  tok_list_delete(list);
   lex_destroy(&lex);
 }
 
 void repl_proc(char *line, lexer_t (*func)(const char *str))
 {
   lexer_t lex = func(line);
-  tok_list_t list = lex_make_toks(&lex);
-  parser_t par = parser_create(&list);
+  tok_list_t *list = lex_make_toks(&lex);
+  parser_t par = parser_create(list);
   node_binary_tree_root_init();
   node_binary_tree(0, par.tok_list->count, &par, *root);
   eval_result_t k = node_binary_tree_eval(*root);
@@ -125,14 +125,19 @@ int main(int argc, char *argv[])
     do
     {
       printf("> ");
-      read = getline(&str, &len, stdin);
+      read = getline(&str, &len, stdin); // flushes
       if (!strcmp("stormout()\n", str) || read == -1)
       {
         free(str);
         str = NULL;
         break;
       }
-      str[read - 1] = '\0';
+      if (!strcmp("\n", str))
+      {
+        printf("no-input\n");
+        continue;
+      }
+      str[read - 1] = '\0'; // because newline is read
       repl_proc(str, lex_create_from_string);
       free(str);
       str = NULL;

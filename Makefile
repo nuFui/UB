@@ -2,6 +2,7 @@ CC = gcc
 CFLAGS = -g
 LDFLAGS = -lm
 
+# Not permanent
 export UROOT = $(shell pwd)
 export UBUILD = $(UROOT)/U/build
 export UBIN = $(UROOT)/U/bin

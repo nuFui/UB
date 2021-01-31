@@ -17,6 +17,7 @@ void node_binary_tree_root_deinit()
   root = NULL;
 }
 
+// Finds smallest operation in the current scope.
 static int find_next_op(parser_t *par, int from, int to)
 {
   int scp = scope;
@@ -60,74 +61,6 @@ static int find_next_op(parser_t *par, int from, int to)
   return smallest_index;
 }
 
-/*
-// Finds next operator pivot in types[] in the current scope.
-static int find_next_op(parser_t *par, int from, int to, tok_type_t types[], int types_count)
-{
-  int scp = scope;
-  tok_type_t smallest = TOK_TYPE_DUMMY_MAX;
-  int smallest_index = -1;
-  while (from < to)
-  {
-    switch (par->tok_list->toks[from]->type)
-    {
-    case TOK_TYPE_LPAR:
-      ++scp;
-      break;
-    case TOK_TYPE_RPAR:
-      --scp;
-      break;
-    case TOK_TYPE_INT:
-    case TOK_TYPE_FLT:
-    case TOK_TYPE_EOF:
-    case TOK_TYPE_DUMMY_MAX:
-      break;
-    default:
-      goto cmp;
-    }
-    ++from;
-    continue;
-  cmp:
-    if (scp == scope)
-    {
-      for (int j = 0; j < types_count; ++j)
-      {
-        if (par->tok_list->toks[from]->type == types[j])
-        {
-          goto small;
-        }
-      }
-      // TODO: Yes error.
-      ++from;
-      continue;
-    small:
-      // If minus, find rightmost one.
-      if (par->tok_list->toks[from]->type <= smallest && smallest == TOK_TYPE_SUB)
-      {
-        smallest = par->tok_list->toks[from]->type;
-        smallest_index = from;
-      }
-      else if (par->tok_list->toks[from]->type < smallest)
-      {
-        smallest = par->tok_list->toks[from]->type;
-        smallest_index = from;
-      }
-    }
-    ++from;
-  }
-  return smallest_index;
-}
-*/
-
-/*
-// PEMDSA
-static tok_type_t ops[5] = {
-    TOK_TYPE_ADD,
-    TOK_TYPE_SUB,
-    TOK_TYPE_DIV,
-    TOK_TYPE_MUL,
-    TOK_TYPE_POW};*/
-
 // Constructs binary tree of operations.
 // How expression 2 * 4 looks like:
 //                 BINOP
@@ -141,6 +74,21 @@ void node_binary_tree(int from, int to, parser_t *par, node_binary_t *mov)
   mov->op = NULL;
   mov->left = NULL;
   mov->right = NULL;
+
+  if (to == from)
+  {
+    // Unary minus or plus.
+    if (par->tok_list->toks[from]->type == TOK_TYPE_SUB || par->tok_list->toks[from]->type == TOK_TYPE_ADD)
+    {
+      mov->op = malloc(sizeof(tok_t));
+      mov->op->type = TOK_TYPE_INT;
+      mov->op->line =  par->tok_list->toks[from]->line;
+      mov->op->column = par->tok_list->toks[from]->column - 1;
+      mov->op->file = par->tok_list->toks[from]->file;
+      mov->op->value = "0";
+      return;
+    }
+  }
 
   if (to - from == 1)
   {

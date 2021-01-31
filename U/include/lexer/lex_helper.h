@@ -6,8 +6,8 @@
 #include <string.h>
 
 #include "../common/error.h"
+#include "../common/ualloc.h"
 
-#define TEST_MEMFAIL 0
 #define TEST_ERRFATAL 0
 
 extern int lex_helper_read_file(const char *path, char **buffer, int *size);

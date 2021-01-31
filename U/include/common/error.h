@@ -1,5 +1,5 @@
-#ifndef __COMMON_ERRORS_H__
-#define __COMMON_ERRORS_H__
+#ifndef __COMMON_ERROR_H__
+#define __COMMON_ERROR_H__
 
 #include <stdarg.h>
 #include <stdio.h>

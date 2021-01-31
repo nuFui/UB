@@ -39,14 +39,13 @@ void parser_err_raise(parser_err_base_t *err, parser_t *par, ...)
 
 void parser_err_copy(parser_err_base_t *dest, parser_err_base_t *src, bool delete_src)
 {
-  dest->t = malloc(sizeof(tok_t));
+  error_pos_t pos = {__FILE__, __func__, __LINE__};
+  dest->t = ualloc(&pos, sizeof(tok_t));
   tok_copy(dest->t, src->t, true);
   dest->details = strdup(src->details);
   if (delete_src)
   {
-    free((char *)src->name);
-    free(src->details);
-    src->name = NULL;
-    src->details = NULL;
+    ufree((char *)src->name);
+    ufree(src->details);
   }
 }

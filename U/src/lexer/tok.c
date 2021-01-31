@@ -13,9 +13,8 @@ tok_t tok_create(tok_type_t type, const char *value, const char *file)
 
 void tok_delete(tok_t *tok)
 {
-  free(tok->value);
+  ufree(tok->value);
   tok->file = NULL;
-  tok->value = NULL;
 }
 
 void tok_print(tok_t *tok, bool newline, bool verbose)
@@ -69,6 +68,9 @@ void tok_list_copy(tok_list_t *dest, tok_list_t *src, bool delete_src)
   dest->count = src->count;
   for (int i = 0; i < src->count; ++i)
   {
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
+    dest->toks[i] = ualloc(&pos, sizeof(tok_t));
+    /*
     dest->toks[i] = malloc(sizeof(tok_t));
     if (!dest->toks[i])
     {
@@ -78,6 +80,7 @@ void tok_list_copy(tok_list_t *dest, tok_list_t *src, bool delete_src)
       error_pos_t pos = {__FILE__, __func__, __LINE__};
       error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
     }
+    */
     tok_copy(dest->toks[i], src->toks[i], delete_src);
   }
   if (delete_src)

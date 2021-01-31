@@ -44,9 +44,7 @@ void lex_err_copy(lex_err_base_t *dest, lex_err_base_t *src, bool delete_src)
   dest->details = strdup(src->details);
   if (delete_src)
   {
-    free((char *)src->name);
-    free(src->details);
-    src->name = NULL;
-    src->details = NULL;
+    ufree((char *)src->name);
+    ufree(src->details);
   }
 }

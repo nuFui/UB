@@ -12,31 +12,20 @@ int lex_helper_read_file(const char *path, char **buffer, int *size)
   {
     fclose(file);
     error_pos_t pos = {__FILE__, __func__, __LINE__};
-    error_raise(&error_fatal, &pos, "Could not open file '%s'", path);
+    error_raise(error_fatal, &pos, "Could not open file '%s'", path);
     return 1;
   }
   fseek(file, 0, SEEK_END);
   *size = ftell(file);
   fseek(file, 0, SEEK_SET);
-  *buffer = malloc(sizeof(char) * (*size));
-#if TEST_MEMFAIL
-  free(*buffer);
-  *buffer = NULL;
-#endif
-  if (!*buffer)
-  {
-    free(*buffer);
-    fclose(file);
-    error_pos_t pos = {__FILE__, __func__, __LINE__};
-    error_raise(&error_memory, &pos, "Could not allocate sufficient memory for '%p'", buffer);
-    return 1;
-  }
+  error_pos_t pos = {__FILE__, __func__, __LINE__};
+  *buffer = ualloc(&pos, sizeof(char) * (*size));
   fread(*buffer, sizeof(char), *size, file);
   int status = fclose(file);
   if (status == EOF)
   {
-    free(*buffer);
-    free(file);
+    ufree(*buffer);
+    ufree(file);
     error_pos_t pos = {__FILE__, __func__, __LINE__};
     error_raise(&error_fatal, &pos, "Could not close file '%s'", path);
   }

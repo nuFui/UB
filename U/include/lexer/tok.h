@@ -7,6 +7,7 @@
 #include <stdbool.h>
 
 #include "../common/error.h"
+#include "../common/ualloc.h"
 
 #define TOK_MAX 100
 
@@ -21,6 +22,7 @@ typedef enum
   TOK_TYPE_RPAR,
   TOK_TYPE_INT,
   TOK_TYPE_FLT,
+  TOK_TYPE_STR,
   TOK_TYPE_EOF,
   TOK_TYPE_DUMMY_MAX
 } tok_type_t;

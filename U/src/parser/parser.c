@@ -29,10 +29,12 @@ static void check_tokens(parser_t *par)
       break;
     case TOK_TYPE_INT:
     case TOK_TYPE_FLT:
+    case TOK_TYPE_STR:
       switch (par->tok_list->toks[i + 1]->type)
       {
       case TOK_TYPE_INT:
       case TOK_TYPE_FLT:
+      case TOK_TYPE_STR:
       case TOK_TYPE_LPAR:;
         parser_err_invalid_syntax peis = {{par->tok_list->toks[i + 1], "ErrInvalidSyntax", "Found '%s' after '%s', expected ')', operator or eof"}};
         parser_err_raise(&peis.base, par, par->tok_list->toks[i + 1]->type, par->tok_list->toks[i]->type);
@@ -58,7 +60,8 @@ static void check_tokens(parser_t *par)
       {
       case TOK_TYPE_LPAR:
       case TOK_TYPE_INT:
-      case TOK_TYPE_FLT:;
+      case TOK_TYPE_FLT:
+      case TOK_TYPE_STR:;
         parser_err_invalid_syntax peis = {{par->tok_list->toks[i + 1], "ErrInvalidSyntax", "Found '%s' after '%s', expected operator, ')' or eof"}};
         parser_err_raise(&peis.base, par, par->tok_list->toks[i + 1]->type, par->tok_list->toks[i]->type);
       }
@@ -79,8 +82,10 @@ parser_t parser_create(tok_list_t *list)
 // Clears current token and token list of parser.
 void parser_destroy(parser_t *par)
 {
+  /* Noneed beacause the list destroys the current token.
   tok_delete(par->tok_cur);
   par->tok_cur = NULL;
+  */
   tok_list_delete(par->tok_list);
   par->tok_list = NULL;
 }

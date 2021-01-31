@@ -24,7 +24,9 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
     ++size;
     lex_advance(lex);
   }
-  tok->value = malloc(sizeof(char) * size);
+  error_pos_t pos = {__FILE__, __func__, __LINE__};
+  tok->value = ualloc(&pos, sizeof(char) * size);
+  /*
   if (!tok->value)
   {
     lex_destroy(lex);
@@ -32,15 +34,40 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
     error_pos_t pos = {__FILE__, __func__, __LINE__};
     error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
   }
+  */
   strncpy(tok->value, f, size);
   tok->value[size] = '\0';
   tok->type = dot_count ? TOK_TYPE_FLT : TOK_TYPE_INT;
 }
 
+static void lex_make_string(lexer_t *lex, tok_t *tok)
+{
+  char *f = lex->cur;
+  int size = 0;
+  while (lex->cur && *lex->cur != '"')
+  {
+    ++size;
+    lex_advance(lex);
+  }
+  error_pos_t pos = {__FILE__, __func__, __LINE__};
+  tok->value = ualloc(&pos, sizeof(char) * size);
+  /*if (!tok->value)
+  {
+    lex_destroy(lex);
+    tok_delete(tok);
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
+    error_raise(&error_memory, &pos, "Could not allocate sufficient memory of %d bytes", sizeof(char) * size);
+  }*/
+  strncpy(tok->value, f, size);
+  tok->value[size] = '\0';
+  tok->type = TOK_TYPE_STR;
+}
+
 // Creates token given lexer, can raise error if illegal character was found.
 static tok_t *lex_make_tok(lexer_t *lex)
 {
-  tok_t *tok = malloc(sizeof(tok_t));
+  error_pos_t pos = {__FILE__, __func__, __LINE__};
+  tok_t *tok = ualloc(&pos, sizeof(tok_t));
   tok->type = -1;
   tok->line = lex->pos.line;
   tok->column = lex->pos.column;
@@ -95,6 +122,10 @@ static tok_t *lex_make_tok(lexer_t *lex)
       tok->type = TOK_TYPE_RPAR;
       lex_advance(lex);
       goto ret;
+    case '"':
+      lex_advance(lex);
+      lex_make_string(lex, tok);
+      goto ret;
     default:;
       lex_err_illegal_char_t eic = {{lex->pos,
                                      "ErrIllegalChar",
@@ -136,8 +167,7 @@ lexer_t lex_create_from_string(const char *str)
 
 void lex_destroy(lexer_t *lex)
 {
-  free(lex->text);
-  lex->text = NULL;
+  ufree(lex->text);
 }
 
 // Sets lexer cursor to the next character, cursor is set to NULL if former EOF is reached.
@@ -161,35 +191,32 @@ void lex_advance(lexer_t *lex)
 // Can raise error if heap-allocation fails.
 tok_list_t *lex_make_toks(lexer_t *lex)
 {
-  tok_list_t *list = malloc(0);
-  if (!list)
-  {
-    lex_destroy(lex);
-    error_pos_t pos = {__FILE__, __func__, __LINE__};
-    error_raise(error_memory, &pos, "Could not allocate sufficient memory");
-  }
+  error_pos_t pos = {__FILE__, __func__, __LINE__};
+  tok_list_t *list = ualloc(&pos, 0);
   list->count = 0;
   while (lex->cur)
   {
-    // Might not want to malloc, see https://stackoverflow.com/questions/8436898/realloc-invalid-next-size-when-reallocating-to-make-space-for-strcat-on-char
-    list = realloc(list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
+    list = urealloc(&pos, list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
+    /*
     if (!list)
     {
       lex_destroy(lex);
       error_pos_t pos = {__FILE__, __func__, __LINE__};
       error_raise(error_memory, &pos, "Could not allocate sufficient memory");
     }
+    */
     list->toks[list->count] = lex_make_tok(lex);
     if (!list->toks[list->count])
     {
-      free(list->toks[list->count]);
-      list->toks[list->count] = NULL;
+      ufree(list->toks[list->count]);
       return list;
     }
     list->toks[list->count]->file = lex->pos.file;
     ++list->count;
   }
 #if APPEND_EOF
+  /*
   list = realloc(list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
   if (!list)
   {
@@ -197,7 +224,9 @@ tok_list_t *lex_make_toks(lexer_t *lex)
     error_pos_t pos = {__FILE__, __func__, __LINE__};
     error_raise(error_memory, &pos, "Could not allocate sufficient memory");
   }
-  list->toks[list->count] = malloc(sizeof(tok_t));
+  */
+  list = urealloc(&pos, list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
+  list->toks[list->count] = ualloc(&pos, sizeof(tok_t));
   list->toks[list->count]->type = TOK_TYPE_EOF;
 #if COUNT_EOF && APPEND_EOF
   ++list->count;

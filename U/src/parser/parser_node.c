@@ -5,16 +5,15 @@ static int scope = 0;
 
 void node_binary_tree_root_init()
 {
-  root = malloc(sizeof(node_binary_t *));
-  *root = malloc(sizeof(node_binary_t));
+  error_pos_t pos = {__FILE__, __func__, __LINE__};
+  root = ualloc(&pos, sizeof(node_binary_t *));
+  *root = ualloc(&pos, sizeof(node_binary_t));
 }
 
 void node_binary_tree_root_deinit()
 {
-  free(*root);
-  *root = NULL;
-  free(root);
-  root = NULL;
+  ufree(*root);
+  ufree(root);
 }
 
 // Finds smallest operation in the current scope.
@@ -77,10 +76,11 @@ void node_binary_tree(int from, int to, parser_t *par, node_binary_t *mov)
 
   if (to == from)
   {
-    // Unary minus or plus.
+    // Unary minus or plus => insert 0 to the left.
     if (par->tok_list->toks[from]->type == TOK_TYPE_SUB || par->tok_list->toks[from]->type == TOK_TYPE_ADD)
     {
-      mov->op = malloc(sizeof(tok_t));
+      error_pos_t pos = {__FILE__, __func__, __LINE__};
+      mov->op = ualloc(&pos, sizeof(tok_t));
       mov->op->type = TOK_TYPE_INT;
       mov->op->line =  par->tok_list->toks[from]->line;
       mov->op->column = par->tok_list->toks[from]->column - 1;
@@ -102,9 +102,10 @@ void node_binary_tree(int from, int to, parser_t *par, node_binary_t *mov)
   int i = find_next_op(par, from, to);
   if (i != -1)
   {
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
     mov->op = par->tok_list->toks[i];
-    mov->left = malloc(sizeof(node_binary_t));
-    mov->right = malloc(sizeof(node_binary_t));
+    mov->left = ualloc(&pos, sizeof(node_binary_t));
+    mov->right = ualloc(&pos, sizeof(node_binary_t));
     node_binary_tree(from, i, par, mov->left);
     node_binary_tree(i + 1, to, par, mov->right);
     return;
@@ -123,14 +124,11 @@ void node_binary_tree_delete(node_binary_t *mov)
 {
   if (!mov)
     return;
-  free(mov->op);
-  mov->op = NULL;
+  ufree(mov->op);
   node_binary_tree_delete(mov->left);
   node_binary_tree_delete(mov->right);
-  free(mov->left);
-  free(mov->right);
-  mov->left = NULL;
-  mov->right = NULL;
+  ufree(mov->left);
+  ufree(mov->right);
 }
 
 void node_binary_tree_print(node_binary_t *mov)

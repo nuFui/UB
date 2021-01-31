@@ -9,8 +9,6 @@
 #include "../common/error.h"
 #include "../common/ualloc.h"
 
-#define TOK_MAX 100
-
 typedef enum
 {
   TOK_TYPE_ADD,
@@ -44,10 +42,10 @@ typedef struct
 
 extern tok_t tok_create(tok_type_t type, const char *value, const char *file);
 extern void tok_delete(tok_t *tok);
-extern void tok_print(tok_t *tok, bool newline, bool verbose);
+extern void tok_print(tok_t *tok, bool newline, bool verbose, bool stringify);
 extern void tok_copy(tok_t *dest, tok_t *src, bool delete_src);
 
-extern void tok_list_print(tok_list_t *list, bool verbose);
+extern void tok_list_print(tok_list_t *list, bool verbose, bool stringify);
 extern void tok_list_copy(tok_list_t *dest, tok_list_t *src, bool delete_src);
 extern void tok_list_delete(tok_list_t *list);
 

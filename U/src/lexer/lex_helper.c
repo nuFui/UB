@@ -5,9 +5,6 @@
 int lex_helper_read_file(const char *path, char **buffer, int *size)
 {
   FILE *file = fopen(path, "r");
-#if TEST_ERRFATAL
-  file = NULL;
-#endif
   if (!file)
   {
     fclose(file);

@@ -43,10 +43,6 @@ static void check_tokens(parser_t *par)
     case TOK_TYPE_LPAR:
       switch (par->tok_list->toks[i + 1]->type)
       {
-        /* Can be followed by unary + or minus.
-      case TOK_TYPE_ADD:
-      case TOK_TYPE_SUB:
-      */
       case TOK_TYPE_MUL:
       case TOK_TYPE_DIV:
       case TOK_TYPE_POW:

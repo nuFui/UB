@@ -31,7 +31,7 @@ void toks(char *str, lexer_t (*func)(const char *str))
 {
   lexer_t lex = func(str);
   tok_list_t *list = lex_make_toks(&lex);
-  tok_list_print(list, true);
+  tok_list_print(list, true, true);
   tok_list_delete(list);
   lex_destroy(&lex);
 }

@@ -17,14 +17,53 @@ void tok_delete(tok_t *tok)
   tok->file = NULL;
 }
 
-void tok_print(tok_t *tok, bool newline, bool verbose)
+static char *stringify_token_type(tok_t *tok)
 {
-  printf("[type: %d ", tok->type);
+  switch (tok->type)
+  {
+  case TOK_TYPE_ADD:
+    return "add";
+  case TOK_TYPE_SUB:
+    return "subtract";
+  case TOK_TYPE_MUL:
+    return "multiply";
+  case TOK_TYPE_DIV:
+    return "divide";
+  case TOK_TYPE_POW:
+    return "exponentiate";
+  case TOK_TYPE_LPAR:
+    return "left parentheses";
+  case TOK_TYPE_RPAR:
+    return "right parentheses";
+  case TOK_TYPE_INT:
+    return "integer literal";
+  case TOK_TYPE_FLT:
+    return "float literal";
+  case TOK_TYPE_STR:
+    return "string literal";
+  case TOK_TYPE_EOF:
+    return "end";
+  default:
+    return "unknown";
+  }
+}
+
+void tok_print(tok_t *tok, bool newline, bool verbose, bool stringify)
+{
+  if (stringify)
+  {
+    printf("[type: %s ", stringify_token_type(tok));
+  }
+  else
+  {
+    printf("[type: %d ", tok->type);
+  }
   if (verbose)
   {
     printf("line: %d column: %d file: %s ", tok->line, tok->column, tok->file);
   }
   printf("value: %s]", tok->value);
+  fflush(stdin);
   if (newline)
   {
     printf("\n");
@@ -54,11 +93,11 @@ void tok_copy(tok_t *dest, tok_t *src, bool delete_src)
   }
 }
 
-void tok_list_print(tok_list_t *list, bool verbose)
+void tok_list_print(tok_list_t *list, bool verbose, bool stringify)
 {
   for (int i = 0; i < list->count; ++i)
   {
-    tok_print(list->toks[i], true, verbose);
+    tok_print(list->toks[i], true, verbose, stringify);
   }
 }
 
@@ -70,17 +109,6 @@ void tok_list_copy(tok_list_t *dest, tok_list_t *src, bool delete_src)
   {
     error_pos_t pos = {__FILE__, __func__, __LINE__};
     dest->toks[i] = ualloc(&pos, sizeof(tok_t));
-    /*
-    dest->toks[i] = malloc(sizeof(tok_t));
-    if (!dest->toks[i])
-    {
-      free(dest->toks[i]);
-      tok_list_delete(dest);
-      tok_list_delete(src);
-      error_pos_t pos = {__FILE__, __func__, __LINE__};
-      error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
-    }
-    */
     tok_copy(dest->toks[i], src->toks[i], delete_src);
   }
   if (delete_src)

@@ -76,14 +76,14 @@ void node_binary_tree(int from, int to, parser_t *par, node_binary_t *mov)
 
   if (to == from)
   {
-    // Unary minus or plus => insert 0 to the left.
+    // Unary minus or plus => insert '0' to the left.
     if (par->tok_list->toks[from]->type == TOK_TYPE_SUB || par->tok_list->toks[from]->type == TOK_TYPE_ADD)
     {
       error_pos_t pos = {__FILE__, __func__, __LINE__};
       mov->op = ualloc(&pos, sizeof(tok_t));
       mov->op->type = TOK_TYPE_INT;
-      mov->op->line =  par->tok_list->toks[from]->line;
-      mov->op->column = par->tok_list->toks[from]->column - 1;
+      mov->op->line = -1;
+      mov->op->column = -1;
       mov->op->file = par->tok_list->toks[from]->file;
       mov->op->value = "0";
       return;
@@ -135,7 +135,7 @@ void node_binary_tree_print(node_binary_t *mov)
 {
   if (!mov)
     return;
-  tok_print(mov->op, true, true);
+  tok_print(mov->op, true, true, true);
   node_binary_tree_print(mov->left);
   node_binary_tree_print(mov->right);
 }

@@ -26,15 +26,6 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
   }
   error_pos_t pos = {__FILE__, __func__, __LINE__};
   tok->value = ualloc(&pos, sizeof(char) * size);
-  /*
-  if (!tok->value)
-  {
-    lex_destroy(lex);
-    tok_delete(tok);
-    error_pos_t pos = {__FILE__, __func__, __LINE__};
-    error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
-  }
-  */
   strncpy(tok->value, f, size);
   tok->value[size] = '\0';
   tok->type = dot_count ? TOK_TYPE_FLT : TOK_TYPE_INT;
@@ -51,13 +42,6 @@ static void lex_make_string(lexer_t *lex, tok_t *tok)
   }
   error_pos_t pos = {__FILE__, __func__, __LINE__};
   tok->value = ualloc(&pos, sizeof(char) * size);
-  /*if (!tok->value)
-  {
-    lex_destroy(lex);
-    tok_delete(tok);
-    error_pos_t pos = {__FILE__, __func__, __LINE__};
-    error_raise(&error_memory, &pos, "Could not allocate sufficient memory of %d bytes", sizeof(char) * size);
-  }*/
   strncpy(tok->value, f, size);
   tok->value[size] = '\0';
   tok->type = TOK_TYPE_STR;
@@ -198,14 +182,6 @@ tok_list_t *lex_make_toks(lexer_t *lex)
   {
     error_pos_t pos = {__FILE__, __func__, __LINE__};
     list = urealloc(&pos, list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
-    /*
-    if (!list)
-    {
-      lex_destroy(lex);
-      error_pos_t pos = {__FILE__, __func__, __LINE__};
-      error_raise(error_memory, &pos, "Could not allocate sufficient memory");
-    }
-    */
     list->toks[list->count] = lex_make_tok(lex);
     if (!list->toks[list->count])
     {
@@ -216,15 +192,6 @@ tok_list_t *lex_make_toks(lexer_t *lex)
     ++list->count;
   }
 #if APPEND_EOF
-  /*
-  list = realloc(list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
-  if (!list)
-  {
-    lex_destroy(lex);
-    error_pos_t pos = {__FILE__, __func__, __LINE__};
-    error_raise(error_memory, &pos, "Could not allocate sufficient memory");
-  }
-  */
   list = urealloc(&pos, list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
   list->toks[list->count] = ualloc(&pos, sizeof(tok_t));
   list->toks[list->count]->type = TOK_TYPE_EOF;

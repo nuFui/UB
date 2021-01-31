@@ -10,7 +10,7 @@ struct Lexer
 {
   char *cur;       // Cursor or current character in analysis.
   lexer_pos_t pos; // Information about position when performing lexical analysis.
-  int size;   // Size of text in bytes.
+  int size;        // Size of text in bytes.
   char *text;      // Source buffer.
 };
 

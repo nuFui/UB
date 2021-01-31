@@ -143,8 +143,20 @@ int main(int argc, char *argv[])
       str = NULL;
     } while (true);
   }
+  else if (!strcmp(argv[1], "help"))
+  {
+    printf("U compiler navigation\n");
+    printf("\tU/bin/U <command> <option> <src>\n");
+    printf("\t\t<command> [run, toks, repl, help]\n");
+    printf("\t\t\thelp => displays this message\n");
+    printf("\t\t\trun => can only be followed by [-s, -f] (string or path to file which oughts to get run)\n");
+    printf("\t\t\ttoks => can only be followed by [-s, -f] (string or path to file from which tokens are extracted\n");
+    printf("\t\t\trepl => followed by nothing\n");
+  }
   else
   {
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
+    error_raise(error_fatal, &pos, "Invalid command '%s'", argv[1]);
     // Invalid first argument.
     exit(EXIT_FAILURE);
   }

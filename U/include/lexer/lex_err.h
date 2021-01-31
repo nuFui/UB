@@ -8,6 +8,10 @@
 
 #include "../common/constants.h"
 
+// Implicit decls required by this translation unit.
+typedef struct Lexer lexer_t;
+void lex_destroy(lexer_t *lex);
+
 typedef struct
 {
   lexer_pos_t pos;
@@ -17,7 +21,7 @@ typedef struct
 
 extern void lex_err_print(lex_err_base_t *err, ...);
 extern void lex_err_vprint(lex_err_base_t *err, va_list details);
-extern void lex_err_raise(lex_err_base_t *err, ...);
+extern void lex_err_raise(lex_err_base_t *err, lexer_t *lex, ...);
 extern void lex_err_copy(lex_err_base_t *dest, lex_err_base_t *src, bool delete_src);
 
 typedef struct

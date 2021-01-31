@@ -16,7 +16,6 @@ typedef struct NodeBinary
 If right is number but op and left are NULL => this is a number node.
 If none are NULL => this is a binary operation node.
 */
-
 extern node_binary_t **root;
 
 extern void node_binary_tree_root_init();

@@ -14,11 +14,10 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
     {
       if (dot_count == 1)
       {
-        lex_destroy(lex);
         lex_err_illegal_char_t eic = {{lex->pos,
                                        "LexErrIllegalChar",
                                        "More than one decimal dot in number"}};
-        lex_err_raise(&eic.base);
+        lex_err_raise(&eic.base, lex);
       }
       ++dot_count;
     }
@@ -100,7 +99,7 @@ static tok_t *lex_make_tok(lexer_t *lex)
       lex_err_illegal_char_t eic = {{lex->pos,
                                      "ErrIllegalChar",
                                      "Illegal character '%c' found"}};
-      lex_err_raise(&eic.base, *lex->cur);
+      lex_err_raise(&eic.base, lex, *lex->cur);
     }
   }
 ret:
@@ -156,7 +155,7 @@ void lex_advance(lexer_t *lex)
 }
 
 #define APPEND_EOF 1
-#define COUNT_EOF 1
+#define COUNT_EOF 0
 
 // Given lexer creates the list of tokens for lex->file.
 // Can raise error if heap-allocation fails.
@@ -172,7 +171,7 @@ tok_list_t *lex_make_toks(lexer_t *lex)
   list->count = 0;
   while (lex->cur)
   {
-    // Might not want to alloc, see https://stackoverflow.com/questions/8436898/realloc-invalid-next-size-when-reallocating-to-make-space-for-strcat-on-char
+    // Might not want to malloc, see https://stackoverflow.com/questions/8436898/realloc-invalid-next-size-when-reallocating-to-make-space-for-strcat-on-char
     list = realloc(list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
     if (!list)
     {

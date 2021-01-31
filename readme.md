@@ -15,14 +15,20 @@ Based on: https://github.com/davidcallanan/py-myopl-code
 
 First navigate to root directory UB.
 Type `make`.
-
+Then:
 ```
 U <command> <option> ...
 ```
+or
+```
+U/bin/U <command> <option> ...
+```
 
 Commands supported: 
+* `help` for help.
 * `run` to run/evaluate program.
 * `toks` to view tokens produced by program.
+* `repl`  interactive shell.
 
 Options supported:
 * `-s` followed by string (program).

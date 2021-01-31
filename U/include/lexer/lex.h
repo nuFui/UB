@@ -3,16 +3,16 @@
 
 #include <ctype.h>
 
-#include "lex_pos.h"
 #include "tok.h"
+#include "lex_err.h"
 
-typedef struct
+struct Lexer
 {
   char *cur;       // Cursor or current character in analysis.
   lexer_pos_t pos; // Information about position when performing lexical analysis.
   int size;   // Size of text in bytes.
   char *text;      // Source buffer.
-} lexer_t;
+};
 
 extern lexer_t lex_create(const char *path);
 extern lexer_t lex_create_from_string(const char *str);

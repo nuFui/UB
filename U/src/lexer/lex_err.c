@@ -27,12 +27,13 @@ void lex_err_vprint(lex_err_base_t *err, va_list details)
   fprintf(stderr, ".%s\n", RESET);
 }
 
-void lex_err_raise(lex_err_base_t *err, ...)
+void lex_err_raise(lex_err_base_t *err, lexer_t *lex, ...)
 {
   va_list args;
-  va_start(args, err);
+  va_start(args, lex);
   lex_err_vprint(err, args);
   va_end(args);
+  lex_destroy(lex);
   exit(EXIT_FAILURE);
 }
 

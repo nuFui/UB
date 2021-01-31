@@ -23,5 +23,8 @@ all: collect_objects
 $(BINARY): $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) $(LDFLAGS) -o $(BINARY)
 
+
+.PHONY: clean
+
 clean:
 	rm -f $(OBJECTS) $(BINARY)

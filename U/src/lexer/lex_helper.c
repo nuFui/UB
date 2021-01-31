@@ -37,7 +37,7 @@ int lex_helper_read_file(const char *path, char **buffer, int *size)
   {
     free(*buffer);
     free(file);
-    error_pos_t pos = {__FILE__, __FUNCTION__, __LINE__};
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
     error_raise(&error_fatal, &pos, "Could not close file '%s'", path);
   }
   (*buffer)[(*size)] = '\0';

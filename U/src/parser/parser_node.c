@@ -17,6 +17,50 @@ void node_binary_tree_root_deinit()
   root = NULL;
 }
 
+static int find_next_op(parser_t *par, int from, int to)
+{
+  int scp = scope;
+  int smallest_index = -1;
+  tok_type_t smallest = TOK_TYPE_DUMMY_MAX;
+  while (from < to)
+  {
+    switch (par->tok_list->toks[from]->type)
+    {
+    case TOK_TYPE_LPAR:
+      ++scp;
+      break;
+    case TOK_TYPE_RPAR:
+      --scp;
+      break;
+    case TOK_TYPE_ADD:
+    case TOK_TYPE_SUB:
+    case TOK_TYPE_DIV:
+    case TOK_TYPE_MUL:
+    case TOK_TYPE_POW:
+      if (scp == scope)
+      {
+        // If minus, find rightmost one.
+        if (par->tok_list->toks[from]->type <= smallest && smallest == TOK_TYPE_SUB)
+        {
+          smallest = par->tok_list->toks[from]->type;
+          smallest_index = from;
+        }
+        else if (par->tok_list->toks[from]->type < smallest)
+        {
+          smallest = par->tok_list->toks[from]->type;
+          smallest_index = from;
+        }
+      }
+      break;
+    default:
+      break;
+    }
+    ++from;
+  }
+  return smallest_index;
+}
+
+/*
 // Finds next operator pivot in types[] in the current scope.
 static int find_next_op(parser_t *par, int from, int to, tok_type_t types[], int types_count)
 {
@@ -57,6 +101,7 @@ static int find_next_op(parser_t *par, int from, int to, tok_type_t types[], int
       ++from;
       continue;
     small:
+      // If minus, find rightmost one.
       if (par->tok_list->toks[from]->type <= smallest && smallest == TOK_TYPE_SUB)
       {
         smallest = par->tok_list->toks[from]->type;
@@ -72,14 +117,16 @@ static int find_next_op(parser_t *par, int from, int to, tok_type_t types[], int
   }
   return smallest_index;
 }
+*/
 
+/*
 // PEMDSA
 static tok_type_t ops[5] = {
     TOK_TYPE_ADD,
     TOK_TYPE_SUB,
     TOK_TYPE_DIV,
     TOK_TYPE_MUL,
-    TOK_TYPE_POW};
+    TOK_TYPE_POW};*/
 
 // Constructs binary tree of operations.
 // How expression 2 * 4 looks like:
@@ -104,7 +151,7 @@ void node_binary_tree(int from, int to, parser_t *par, node_binary_t *mov)
     }
   }
 
-  int i = find_next_op(par, from, to, ops, 5);
+  int i = find_next_op(par, from, to);
   if (i != -1)
   {
     mov->op = par->tok_list->toks[i];

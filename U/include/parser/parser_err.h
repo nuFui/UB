@@ -6,7 +6,7 @@
 #include "../lexer/tok.h"
 #include "../common/constants.h"
 
-// Implicit decls.
+// Implicit decls required by this translation unit.
 typedef struct Parser parser_t;
 void parser_destroy(parser_t *par);
 

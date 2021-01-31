@@ -21,7 +21,7 @@ void run(char *str, lexer_t (*func)(const char *str))
     printf("Failed to evaluate.\n");
     exit(EXIT_SUCCESS);
   }
-  printf("%s = %f\n", lex.text, k.result);
+  printf("%s = %s\n", lex.text, k.result);
   lex_destroy(&lex);
   parser_destroy(&par);
   node_binary_tree_root_deinit(root);
@@ -46,7 +46,7 @@ void repl()
   {
     printf("> ");
     read = getline(&str, &len, stdin); // flushes
-    if (!strcmp("stormout()\n", str) || read == -1)
+    if (!strcmp("stormout() or CTRL+C\n", str) || read == -1)
     {
       free(str);
       str = NULL;
@@ -54,7 +54,7 @@ void repl()
     }
     if (!strcmp("\n", str))
     {
-      printf("no-input\n");
+      printf("nil\n");
       continue;
     }
     str[read - 1] = '\0'; // because newline is read

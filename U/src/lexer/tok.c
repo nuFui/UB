@@ -52,7 +52,7 @@ void tok_print(tok_t *tok, bool newline, bool verbose, bool stringify)
 {
   if (stringify)
   {
-    printf("[type: %s ", stringify_token_type(tok));
+    printf("[type: '%s' ", stringify_token_type(tok));
   }
   else
   {

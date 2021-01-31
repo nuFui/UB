@@ -92,7 +92,9 @@ void node_binary_tree(int from, int to, parser_t *par, node_binary_t *mov)
 
   if (to - from == 1)
   {
-    if (par->tok_list->toks[from]->type == TOK_TYPE_INT || par->tok_list->toks[from]->type == TOK_TYPE_FLT)
+    if (par->tok_list->toks[from]->type == TOK_TYPE_INT || 
+        par->tok_list->toks[from]->type == TOK_TYPE_FLT ||
+        par->tok_list->toks[from]->type == TOK_TYPE_STR)
     {
       mov->op = par->tok_list->toks[from];
       return;

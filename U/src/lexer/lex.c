@@ -35,7 +35,7 @@ static void lex_make_string(lexer_t *lex, tok_t *tok)
 {
   char *f = lex->cur;
   int size = 0;
-  while (lex->cur && *lex->cur != '"')
+  while (lex->cur && *lex->cur != '"' && *lex->cur != '\'')
   {
     ++size;
     lex_advance(lex);
@@ -107,8 +107,10 @@ static tok_t *lex_make_tok(lexer_t *lex)
       lex_advance(lex);
       goto ret;
     case '"':
+    case '\'':
       lex_advance(lex);
       lex_make_string(lex, tok);
+      lex_advance(lex);
       goto ret;
     default:;
       lex_err_illegal_char_t eic = {{lex->pos,

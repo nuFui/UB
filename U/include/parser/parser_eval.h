@@ -12,8 +12,9 @@ typedef enum
 
 typedef struct
 {
-  eval_result_code_t code;
-  float result;
+  tok_type_t kind;          // Current type.
+  eval_result_code_t code;  // Success?
+  char *result;             // Interpretation of result. actually int or float but sometimes merely str.
 } eval_result_t;
 
 extern eval_result_t node_binary_tree_eval(node_binary_t *mov);

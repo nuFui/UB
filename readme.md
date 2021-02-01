@@ -39,7 +39,7 @@ Options supported:
 Evaluation
 ```
 > U/bin/U run -s "4^(1+1)-10"
-4^(1+1)-10 = 6.000000
+4^(1+1)-10 = 6
 
 > U/bin/U run -s "10^10^10"
 10^10^10 = inf

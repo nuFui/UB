@@ -3,6 +3,8 @@
 
 #include "parser_node.h"
 
+#include <limits.h>
+
 typedef enum
 {
   EVAL_SUCCESS,

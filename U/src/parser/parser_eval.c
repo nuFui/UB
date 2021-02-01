@@ -29,7 +29,7 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
   eval_result_t res = {
       kind,
       (kind != TOK_TYPE_DUMMY_MAX ? EVAL_SUCCESS : EVAL_FAILURE),
-      ""};
+      NULL};
   if (res.code != EVAL_FAILURE)
   {
     switch (node->op->type)
@@ -52,7 +52,12 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
         }
         else
         {
-          snprintf(res.result, MAX_DIGITS, "%d", (int)sum);
+          if (LLONG_MAX < sum)
+          {
+            strcat(res.result, "inf");
+            break;
+          }
+          snprintf(res.result, MAX_DIGITS, "%lld", (long long)sum);
         }
       }
       break;
@@ -65,7 +70,12 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
       }
       else
       {
-        snprintf(res.result, MAX_DIGITS, "%d", (int)sb);
+        if (LLONG_MAX < sb)
+        {
+          strcat(res.result, "inf");
+          break;
+        }
+        snprintf(res.result, MAX_DIGITS, "%lld", (long long)sb);
       }
       break;
     case TOK_TYPE_MUL:
@@ -92,7 +102,12 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
         }
         else
         {
-          snprintf(res.result, MAX_DIGITS, "%d", (int)ml);
+          if (LLONG_MAX < ml)
+          {
+            strcat(res.result, "inf");
+            break;
+          }
+          snprintf(res.result, MAX_DIGITS, "%lld", (long long)ml);
         }
       }
       break;
@@ -110,7 +125,12 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
       }
       else
       {
-        snprintf(res.result, MAX_DIGITS, "%d", (int)dv);
+        if (LLONG_MAX < dv)
+        {
+          strcat(res.result, "inf");
+          break;
+        }
+        snprintf(res.result, MAX_DIGITS, "%lld", (long long)dv);
       }
       break;
     case TOK_TYPE_POW:
@@ -122,7 +142,12 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
       }
       else
       {
-        snprintf(res.result, MAX_DIGITS, "%d", (int)pw);
+        if (LLONG_MAX < pw)
+        {
+          strcat(res.result, "inf");
+          break;
+        }
+        snprintf(res.result, MAX_DIGITS, "%lld", (long long)pw);
       }
       break;
     }
@@ -141,7 +166,9 @@ eval_result_t node_binary_tree_eval(node_binary_t *mov)
         mov->op->value};
     return ret;
   }
-  eval_result_t s = node_binary_eval(mov, node_binary_tree_eval(mov->left), node_binary_tree_eval(mov->right));
+  eval_result_t left_subtree = node_binary_tree_eval(mov->left);
+  eval_result_t right_subtree = node_binary_tree_eval(mov->right);
+  eval_result_t s = node_binary_eval(mov, left_subtree, right_subtree);
   if (s.code != EVAL_SUCCESS)
   {
     node_binary_tree_delete(*root);

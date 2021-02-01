@@ -38,7 +38,8 @@ void toks(char *str, lexer_t (*func)(const char *str))
 
 void repl()
 {
-  printf("stormout() to exit\n");
+  printf("COMPILER Ulang\n");
+  printf("Type stormout() or CTRL+C to exit\n");
   char *str = NULL;
   ssize_t len = 0;
   int read = 0;
@@ -46,7 +47,7 @@ void repl()
   {
     printf("> ");
     read = getline(&str, &len, stdin); // flushes
-    if (!strcmp("stormout() or CTRL+C\n", str) || read == -1)
+    if (!strcmp("stormout()\n", str) || read == -1)
     {
       free(str);
       str = NULL;

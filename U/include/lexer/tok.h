@@ -18,9 +18,11 @@ typedef enum
   TOK_TYPE_POW,
   TOK_TYPE_LPAR,
   TOK_TYPE_RPAR,
+  TOK_TYPE_ASGN,
   TOK_TYPE_INT,
   TOK_TYPE_FLT,
   TOK_TYPE_STR,
+  TOK_TYPE_IDF,
   TOK_TYPE_EOF,
   TOK_TYPE_DUMMY_MAX
 } tok_type_t;
@@ -39,6 +41,9 @@ typedef struct
   int count;
   tok_t *toks[];
 } tok_list_t;
+
+extern const char *stringify_token_type(tok_type_t type);
+extern const char *symbolize_token_type(tok_type_t type);
 
 extern tok_t tok_create(tok_type_t type, const char *value, const char *file);
 extern void tok_delete(tok_t *tok);

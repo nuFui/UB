@@ -17,9 +17,9 @@ void tok_delete(tok_t *tok)
   tok->file = NULL;
 }
 
-static char *stringify_token_type(tok_t *tok)
+const char *stringify_token_type(tok_type_t type)
 {
-  switch (tok->type)
+  switch (type)
   {
   case TOK_TYPE_ADD:
     return "add";
@@ -35,6 +35,8 @@ static char *stringify_token_type(tok_t *tok)
     return "left parentheses";
   case TOK_TYPE_RPAR:
     return "right parentheses";
+  case TOK_TYPE_ASGN:
+    return "assignment";
   case TOK_TYPE_INT:
     return "integer literal";
   case TOK_TYPE_FLT:
@@ -48,11 +50,38 @@ static char *stringify_token_type(tok_t *tok)
   }
 }
 
+const char *symbolize_token_type(tok_type_t type)
+{
+  switch (type)
+  {
+  case TOK_TYPE_ADD:
+    return "+";
+  case TOK_TYPE_SUB:
+    return "-";
+  case TOK_TYPE_DIV:
+    return "/";
+  case TOK_TYPE_MUL:
+    return "*";
+  case TOK_TYPE_POW:
+    return "^";
+  case TOK_TYPE_LPAR:
+    return "(";
+  case TOK_TYPE_RPAR:
+    return ")";
+  case TOK_TYPE_ASGN:
+    return "=";
+  case TOK_TYPE_EOF:
+    return "EOF";
+  default:
+    return "unknown";
+  }
+}
+
 void tok_print(tok_t *tok, bool newline, bool verbose, bool stringify)
 {
   if (stringify)
   {
-    printf("[type: '%s' ", stringify_token_type(tok));
+    printf("[type: '%s' ", stringify_token_type(tok->type));
   }
   else
   {

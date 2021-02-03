@@ -37,6 +37,7 @@ static int find_next_op(parser_t *par, int from, int to)
     case TOK_TYPE_DIV:
     case TOK_TYPE_MUL:
     case TOK_TYPE_POW:
+    case TOK_TYPE_ASGN:
       if (scp == scope)
       {
         // If minus, find rightmost one.
@@ -94,7 +95,8 @@ void node_binary_tree(int from, int to, parser_t *par, node_binary_t *mov)
   {
     if (par->tok_list->toks[from]->type == TOK_TYPE_INT || 
         par->tok_list->toks[from]->type == TOK_TYPE_FLT ||
-        par->tok_list->toks[from]->type == TOK_TYPE_STR)
+        par->tok_list->toks[from]->type == TOK_TYPE_STR ||
+        par->tok_list->toks[from]->type == TOK_TYPE_IDF)
     {
       mov->op = par->tok_list->toks[from];
       return;

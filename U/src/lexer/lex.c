@@ -41,10 +41,26 @@ static void lex_make_string(lexer_t *lex, tok_t *tok)
     lex_advance(lex);
   }
   error_pos_t pos = {__FILE__, __func__, __LINE__};
-  tok->value = ualloc(&pos, sizeof(char) * size);
+  tok->value = ualloc(&pos, size);
   strncpy(tok->value, f, size);
   tok->value[size] = '\0';
   tok->type = TOK_TYPE_STR;
+}
+
+static void lex_make_identifier(lexer_t *lex, tok_t *tok)
+{
+  char *f = lex->cur;
+  int size = 0;
+  while (lex->cur && (isalpha(*lex->cur) || *lex->cur == '_'))
+  {
+    ++size;
+    lex_advance(lex);
+  }
+  error_pos_t pos = {__FILE__, __func__, __LINE__};
+  tok->value = ualloc(&pos, size);
+  strncpy(tok->value, f, size);
+  tok->value[size] = '\0';
+  tok->type = TOK_TYPE_IDF;
 }
 
 // Creates token given lexer, can raise error if illegal character was found.
@@ -58,6 +74,11 @@ static tok_t *lex_make_tok(lexer_t *lex)
   tok->value = NULL;
   while (lex->cur)
   {
+    if (isalpha(*lex->cur) || *lex->cur == '_')
+    {
+      lex_make_identifier(lex, tok);
+      break;
+    }
     switch (*lex->cur)
     {
     case ' ':
@@ -104,6 +125,10 @@ static tok_t *lex_make_tok(lexer_t *lex)
       goto ret;
     case ')':
       tok->type = TOK_TYPE_RPAR;
+      lex_advance(lex);
+      goto ret;
+    case '=':
+      tok->type = TOK_TYPE_ASGN;
       lex_advance(lex);
       goto ret;
     case '"':

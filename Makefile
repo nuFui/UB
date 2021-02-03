@@ -16,9 +16,9 @@ collect_objects:
 	+$(MAKE) -C $(UROOT)/U/src/lexer
 	+$(MAKE) -C $(UROOT)/U/src/parser
 	$(MAKE) $(BINARY)
+	$(info Completed linking of $(shell pwd))
 
 all: collect_objects
-	$(info Completed linking of $(shell pwd))
 
 $(BINARY): $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) $(LDFLAGS) -o $(BINARY)

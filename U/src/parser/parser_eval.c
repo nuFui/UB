@@ -158,6 +158,9 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
 // Evaluates binary tree from leaves up.
 eval_result_t node_binary_tree_eval(node_binary_t *mov)
 {
+  if (mov->op->type == TOK_TYPE_ASGN) {
+    mov->left->op
+  }
   if (mov->op->type == TOK_TYPE_INT || mov->op->type == TOK_TYPE_FLT || mov->op->type == TOK_TYPE_STR)
   {
     eval_result_t ret = {

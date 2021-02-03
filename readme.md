@@ -6,11 +6,16 @@ Beta implementation of toy U lang. The agony.
 
 * [x] Create a lexer
 * [ ] Create a parser
-  * [ ] Create expression parser
+  * [x] Create expression parser
     * [x] Numerical
     * [x] Stringical?
-    * [ ] Expectational syntax checking
+    * [x] Expectational syntax checking
+    * TODO: Leading 0 or tailing zero trim.
+    * TODO: Definitions of "()" and other special cases.
+    * TODO: Multiple expression evaluation.
   * [ ] Create variable expression parser
+    * [x] Variable eval
+    * [ ] Persistent variable register
 
 ## Usage
 

@@ -18,7 +18,7 @@ void expr1()
   tok_list_t *tokens = lex_make_toks(&lexer);
   parser_t parser = parser_create(tokens);
   node_binary_tree(0, parser.tok_list->count - 1, &parser, rt);
-  TEST_ASSERT_EQUAL(-530, (int)node_binary_tree_eval(rt).result);
+  TEST_ASSERT_EQUAL(-530, (int)node_binary_tree_eval(par, rt).result);
   tok_list_delete(tokens);
   lex_destroy(&lexer);
   parser_destroy(&parser);
@@ -32,7 +32,7 @@ void expr2()
   tok_list_t *tokens = lex_make_toks(&lexer);
   parser_t parser = parser_create(tokens);
   node_binary_tree(0, parser.tok_list->count - 1, &parser, rt);
-  TEST_ASSERT_EQUAL(-27, (int)node_binary_tree_eval(rt).result);
+  TEST_ASSERT_EQUAL(-27, (int)node_binary_tree_eval(par, rt).result);
   tok_list_delete(tokens);
   lex_destroy(&lexer);
   parser_destroy(&parser);
@@ -46,7 +46,7 @@ void expr3()
   tok_list_t *tokens = lex_make_toks(&lexer);
   parser_t parser = parser_create(tokens);
   node_binary_tree(0, parser.tok_list->count - 1, &parser, rt);
-  TEST_ASSERT_EQUAL(-1, (int)node_binary_tree_eval(rt).result);
+  TEST_ASSERT_EQUAL(-1, (int)node_binary_tree_eval(par, rt).result);
   tok_list_delete(tokens);
   lex_destroy(&lexer);
   parser_destroy(&parser);
@@ -60,7 +60,7 @@ void expr4()
   tok_list_t *tokens = lex_make_toks(&lexer);
   parser_t parser = parser_create(tokens);
   node_binary_tree(0, parser.tok_list->count - 1, &parser, rt);
-  TEST_ASSERT_EQUAL(-2, (int)node_binary_tree_eval(rt).result);
+  TEST_ASSERT_EQUAL(-2, (int)node_binary_tree_eval(par, rt).result);
   tok_list_delete(tokens);
   lex_destroy(&lexer);
   parser_destroy(&parser);
@@ -74,7 +74,7 @@ void expr5()
   tok_list_t *tokens = lex_make_toks(&lexer);
   parser_t parser = parser_create(tokens);
   node_binary_tree(0, parser.tok_list->count - 1, &parser, rt);
-  TEST_ASSERT_EQUAL(1, (int)node_binary_tree_eval(rt).result);
+  TEST_ASSERT_EQUAL(1, (int)node_binary_tree_eval(par, rt).result);
   tok_list_delete(tokens);
   lex_destroy(&lexer);
   parser_destroy(&parser);

@@ -125,6 +125,9 @@ parser_t parser_create(tok_list_t *list)
   par.tok_index = 0;
   par.tok_list = list;
   par.tok_cur = list->toks[par.tok_index];
+  error_pos_t pos = {__FILE__, __func__, __LINE__};
+  par.reg = ualloc(&pos, 0);
+  par.reg->count = 0;
   check_tokens(&par);
   return par;
 }
@@ -137,6 +140,8 @@ void parser_destroy(parser_t *par)
   par->tok_cur = NULL;
   */
   tok_list_delete(par->tok_list);
+  parser_register_destroy(par->reg);
+  par->reg = NULL;
   par->tok_list = NULL;
 }
 

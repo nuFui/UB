@@ -10,6 +10,12 @@ static void lex_make_number(lexer_t *lex, tok_t *tok)
   char *f = lex->cur;
   while (lex->cur && (isdigit(*lex->cur) || *lex->cur == '.'))
   {
+    // For trailing zeros.
+    if (*lex->cur == '0' && size == 0) {
+      f = lex->cur + 1;
+      lex_advance(lex);
+      continue;
+    }
     if (*lex->cur == '.')
     {
       if (dot_count == 1)

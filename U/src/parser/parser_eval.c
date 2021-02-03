@@ -156,10 +156,32 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
 }
 
 // Evaluates binary tree from leaves up.
-eval_result_t node_binary_tree_eval(node_binary_t *mov)
+eval_result_t node_binary_tree_eval(parser_t *par, node_binary_t *mov)
 {
-  if (mov->op->type == TOK_TYPE_ASGN) {
-    mov->left->op
+  if (mov->op->type == TOK_TYPE_ASGN)
+  {
+    if (mov->left->op->type != TOK_TYPE_IDF)
+    {
+      parser_err_base_t err = {
+          mov->left->op,
+          "InvalidSyntaxErr",
+          "Expected identifier name got '%s'"};
+      parser_err_raise(&err, par, mov->left->op->value);
+    }
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
+    identifier_t *idf = ualloc(&pos, sizeof(identifier_t));
+    eval_result_t res = node_binary_tree_eval(par, mov->right);
+    if (res.code != EVAL_SUCCESS)
+    {
+      node_binary_tree_root_deinit();
+      exit(EXIT_FAILURE);
+    }
+    idf->type = res.kind;
+    idf->name = mov->left->op->value;
+    idf->value = res.result;
+    parser_register_add(&par->reg, idf);  // must be referneced
+    eval_result_t asgn_ret = {TOK_TYPE_IDF, res.code, NULL};
+    return asgn_ret;
   }
   if (mov->op->type == TOK_TYPE_INT || mov->op->type == TOK_TYPE_FLT || mov->op->type == TOK_TYPE_STR)
   {
@@ -169,12 +191,12 @@ eval_result_t node_binary_tree_eval(node_binary_t *mov)
         mov->op->value};
     return ret;
   }
-  eval_result_t left_subtree = node_binary_tree_eval(mov->left);
-  eval_result_t right_subtree = node_binary_tree_eval(mov->right);
+  eval_result_t left_subtree = node_binary_tree_eval(par, mov->left);
+  eval_result_t right_subtree = node_binary_tree_eval(par, mov->right);
   eval_result_t s = node_binary_eval(mov, left_subtree, right_subtree);
   if (s.code != EVAL_SUCCESS)
   {
-    node_binary_tree_delete(*root);
+    node_binary_tree_root_deinit();
     exit(EXIT_FAILURE);
   }
   return s;

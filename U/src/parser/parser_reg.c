@@ -1,11 +1,26 @@
 #include "../../include/parser/parser_reg.h"
 
-void parser_register_add(parser_register_t *reg, identifier_t *idf)
+parser_register_t parser_register_create()
+{
+  parser_register_t reg = {0};
+  return reg;
+}
+
+void parser_register_destroy(parser_register_t *reg)
+{
+  while (reg->count > 0)
+  {
+    ufree(reg->identifiers[reg->count]);
+    --reg->count;
+  }
+}
+
+void parser_register_add(parser_register_t **reg, identifier_t *idf)
 {
   error_pos_t pos = {__FILE__, __func__, __LINE__};
-  reg->identifiers = urealloc(&pos, reg->identifiers, sizeof(parser_register_t) + (reg->count + 1) * sizeof(identifier_t));
-  idf->id = reg->count;
-  reg->identifiers[reg->count++] = idf;
+  *reg = urealloc(&pos, *reg, sizeof(parser_register_t) + ((*reg)->count + 1) * sizeof(identifier_t));
+  idf->id = (*reg)->count;
+  (*reg)->identifiers[(*reg)->count++] = idf;
 }
 
 static int bins_wrapped(int to, int idf_id)
@@ -53,6 +68,5 @@ void parser_register_remove(parser_register_t *reg, int idf_id)
 
 void parser_register_update(parser_register_t *reg, int idf_id, char *newvalue)
 {
-  int found_at = bins_wrapped(reg->count, idf_id);
   reg->identifiers[bins_wrapped(reg->count, idf_id)]->value = newvalue;
 }

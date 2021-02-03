@@ -15,13 +15,21 @@ void run(char *str, lexer_t (*func)(const char *str))
   parser_t par = parser_create(list);
   node_binary_tree_root_init();
   node_binary_tree(0, par.tok_list->count, &par, *root);
-  eval_result_t k = node_binary_tree_eval(*root);
+  eval_result_t k = node_binary_tree_eval(&par, *root);
   if (k.code == EVAL_FAILURE)
   {
     printf("Failed to evaluate.\n");
     exit(EXIT_SUCCESS);
   }
-  printf("%s = %s\n", lex.text, k.result);
+  if (k.kind != TOK_TYPE_IDF)
+  {
+    printf("%s = %s\n", lex.text, k.result);
+  }
+  else
+  {
+    identifier_t *s = par.reg->identifiers[par.reg->count - 1];
+    printf("%s = %s\n", s->name, s->value);
+  }
   lex_destroy(&lex);
   parser_destroy(&par);
   node_binary_tree_root_deinit(root);

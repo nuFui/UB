@@ -1,8 +1,6 @@
 #ifndef __PARSER_PARSER_NODE_H__
 #define __PARSER_PARSER_NODE_H__
 
-#include <math.h>
-
 #include "parser.h"
 
 typedef struct NodeBinary {

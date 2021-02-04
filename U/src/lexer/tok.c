@@ -58,6 +58,8 @@ const char *symbolize_token_type(tok_type_t type) {
       return "*";
     case TOK_TYPE_POW:
       return "^";
+    case TOK_TYPE_MOD:
+      return "%%";
     case TOK_TYPE_LPAR:
       return "(";
     case TOK_TYPE_RPAR:

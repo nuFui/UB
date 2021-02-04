@@ -4,15 +4,14 @@
 /*Toplevel definitions ran by switches.*/
 
 #include "../lexer/lex.h"
-#include "../parser/parser.h"
 #include "../parser/parser_eval.h"
-#include "../parser/parser_node.h"
 
 void run(char *str, lexer_t (*func)(const char *str)) {
   lexer_t lex = func(str);
   tok_list_t *list = lex_make_toks(&lex);
   parser_t par = parser_create(list);
-  parser_register_t reg = parser_register_create();
+  parser_register_t reg;
+  reg.count = 0;
   node_binary_tree_root_init();
   node_binary_tree(0, par.tok_list->count, &par, *root);
   eval_result_t k = node_binary_tree_eval(&reg, *root);

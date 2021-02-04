@@ -131,8 +131,6 @@ void parser_destroy(parser_t *par) {
   par->tok_cur = NULL;
   */
   tok_list_delete(par->tok_list);
-  parser_register_destroy(par->reg);
-  par->reg = NULL;
   par->tok_list = NULL;
 }
 

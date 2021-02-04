@@ -2,6 +2,7 @@
 #define __PARSER_PARSER_EVAL_H__
 
 #include <limits.h>
+#include <math.h>
 
 #include "parser_node.h"
 #include "parser_reg.h"

@@ -140,11 +140,11 @@ eval_result_t node_binary_tree_eval(parser_register_t *reg, node_binary_t *mov) 
           mov->left->op,
           "InvalidSyntaxErr",
           "Expected identifier name got '%s'"};
-      parser_err_raise(&err, par, stringify_token_type(mov->left->op->type));
+      parser_register_err_raise(&err, reg, stringify_token_type(mov->left->op->type));
     }
     error_pos_t pos = {__FILE__, __func__, __LINE__};
     identifier_t *idf = ualloc(&pos, sizeof(identifier_t));
-    eval_result_t res = node_binary_tree_eval(par, mov->right);
+    eval_result_t res = node_binary_tree_eval(reg, mov->right);
     if (res.code != EVAL_SUCCESS) {
       node_binary_tree_root_deinit();
       exit(EXIT_FAILURE);
@@ -163,8 +163,8 @@ eval_result_t node_binary_tree_eval(parser_register_t *reg, node_binary_t *mov) 
         mov->op->value};
     return ret;
   }
-  eval_result_t left_subtree = node_binary_tree_eval(par, mov->left);
-  eval_result_t right_subtree = node_binary_tree_eval(par, mov->right);
+  eval_result_t left_subtree = node_binary_tree_eval(reg, mov->left);
+  eval_result_t right_subtree = node_binary_tree_eval(reg, mov->right);
   eval_result_t s = node_binary_eval(mov, left_subtree, right_subtree);
   if (s.code != EVAL_SUCCESS) {
     node_binary_tree_root_deinit();

@@ -1,10 +1,5 @@
 #include "../../include/parser/parser_reg.h"
 
-parser_register_t parser_register_create() {
-  parser_register_t reg = {0};
-  return reg;
-}
-
 void parser_register_destroy(parser_register_t *reg) {
   while (reg->count > 0) {
     ufree(reg->identifiers[reg->count]);

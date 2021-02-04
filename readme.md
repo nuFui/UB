@@ -41,7 +41,8 @@ Options supported:
 * `-f` followed by path to program.
 
 ### Examples
-Evaluation
+#### Arithmetic
+Operators: `+`, `-`, `*`, `/`, `^` (power), `%` (mod), `=`
 ```
 > U/bin/U run -s "4^(1+1)-10"
 4^(1+1)-10 = 6
@@ -56,6 +57,7 @@ Evaluation
 'cat' + 'dog' = catdog
 ```
 
+#### Lexer
 ```
 > U/bin/U toks -f /path/to/file/containing/"-1+2^(9/3)*22".u
 [type: 'subtract' line: 1 column: 0 file: <stdin> value: (null)]

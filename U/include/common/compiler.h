@@ -5,29 +5,25 @@
 
 #include "../lexer/lex.h"
 #include "../parser/parser.h"
-#include "../parser/parser_node.h"
 #include "../parser/parser_eval.h"
+#include "../parser/parser_node.h"
 
-void run(char *str, lexer_t (*func)(const char *str))
-{
+void run(char *str, lexer_t (*func)(const char *str)) {
   lexer_t lex = func(str);
   tok_list_t *list = lex_make_toks(&lex);
   parser_t par = parser_create(list);
+  parser_register_t reg = parser_register_create();
   node_binary_tree_root_init();
   node_binary_tree(0, par.tok_list->count, &par, *root);
-  eval_result_t k = node_binary_tree_eval(&par, *root);
-  if (k.code == EVAL_FAILURE)
-  {
+  eval_result_t k = node_binary_tree_eval(&reg, *root);
+  if (k.code == EVAL_FAILURE) {
     printf("Failed to evaluate.\n");
     exit(EXIT_SUCCESS);
   }
-  if (k.kind != TOK_TYPE_IDF)
-  {
+  if (k.kind != TOK_TYPE_IDF) {
     printf("%s = %s\n", lex.text, k.result);
-  }
-  else
-  {
-    identifier_t *s = par.reg->identifiers[par.reg->count - 1];
+  } else {
+    identifier_t *s = reg.identifiers[reg.count - 1];
     printf("%s = %s\n", s->name, s->value);
   }
   lex_destroy(&lex);
@@ -35,8 +31,7 @@ void run(char *str, lexer_t (*func)(const char *str))
   node_binary_tree_root_deinit(root);
 }
 
-void toks(char *str, lexer_t (*func)(const char *str))
-{
+void toks(char *str, lexer_t (*func)(const char *str)) {
   lexer_t lex = func(str);
   tok_list_t *list = lex_make_toks(&lex);
   tok_list_print(list, true, true);
@@ -44,37 +39,32 @@ void toks(char *str, lexer_t (*func)(const char *str))
   lex_destroy(&lex);
 }
 
-void repl()
-{
+void repl() {
   printf("COMPILER Ulang\n");
   printf("Type stormout() or CTRL+C to exit\n");
   char *str = NULL;
   ssize_t len = 0;
   int read = 0;
-  do
-  {
+  do {
     printf("> ");
-    read = getline(&str, &len, stdin); // flushes
-    if (!strcmp("stormout()\n", str) || read == -1)
-    {
+    read = getline(&str, &len, stdin);  // flushes
+    if (!strcmp("stormout()\n", str) || read == -1) {
       free(str);
       str = NULL;
       break;
     }
-    if (!strcmp("\n", str))
-    {
+    if (!strcmp("\n", str)) {
       printf("nil\n");
       continue;
     }
-    str[read - 1] = '\0'; // because newline is read
+    str[read - 1] = '\0';  // because newline is read
     run(str, lex_create_from_string);
     free(str);
     str = NULL;
   } while (true);
 }
 
-void help()
-{
+void help() {
   printf("U compiler navigation\n");
   printf("\tU/bin/U <command> <option> <src>\n");
   printf("\t\t<command> [run, toks, repl, help]\n");

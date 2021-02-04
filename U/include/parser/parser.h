@@ -2,16 +2,12 @@
 #define __PARSER_PARSER_H__
 
 #include "../lexer/tok.h"
-
 #include "parser_err.h"
-#include "parser_reg.h"
 
-struct Parser
-{
+struct Parser {
   int tok_index;
   tok_t *tok_cur;
   tok_list_t *tok_list;
-  parser_register_t *reg;
 };
 
 extern parser_t parser_create(tok_list_t *list);

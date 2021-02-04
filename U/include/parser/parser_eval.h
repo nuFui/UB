@@ -1,12 +1,12 @@
 #ifndef __PARSER_PARSER_EVAL_H__
 #define __PARSER_PARSER_EVAL_H__
 
-#include "parser_node.h"
-
 #include <limits.h>
 
-typedef enum
-{
+#include "parser_node.h"
+#include "parser_reg.h"
+
+typedef enum {
   EVAL_SUCCESS,
   EVAL_FAILURE,
   EVAL_DIVZERO,
@@ -19,6 +19,6 @@ typedef struct
   char *result;             // Interpretation of result. actually int or float but sometimes merely str.
 } eval_result_t;
 
-extern eval_result_t node_binary_tree_eval(parser_t *par, node_binary_t *mov);
+extern eval_result_t node_binary_tree_eval(parser_register_t *par, node_binary_t *mov);
 
 #endif

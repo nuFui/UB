@@ -4,9 +4,8 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
-#include "lex_pos.h"
-
 #include "../common/constants.h"
+#include "lex_pos.h"
 
 // Implicit decls required by this translation unit.
 typedef struct Lexer lexer_t;

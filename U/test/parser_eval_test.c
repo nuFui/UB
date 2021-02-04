@@ -1,18 +1,16 @@
-#include "../include/parser/parser_node.h"
 #include "../include/parser/parser_eval.h"
-#include "../include/lexer/lex.h"
+
 #include "../../Unity/src/unity.h"
+#include "../include/lexer/lex.h"
+#include "../include/parser/parser_node.h"
 
-void setUp(void)
-{
+void setUp(void) {
 }
 
-void tearDown(void)
-{
+void tearDown(void) {
 }
 
-void expr1()
-{
+void expr1() {
   node_binary_t *rt = malloc(sizeof(node_binary_t));
   lexer_t lexer = lex_create_from_string("2-(4+3)*(8*(6-3+(4-1)+4)-4*(2-3)^2)");
   tok_list_t *tokens = lex_make_toks(&lexer);
@@ -25,8 +23,7 @@ void expr1()
   node_binary_tree_delete(rt);
 }
 
-void expr2()
-{
+void expr2() {
   node_binary_t *rt = malloc(sizeof(node_binary_t));
   lexer_t lexer = lex_create_from_string("2^2-3+4*(2-9)");
   tok_list_t *tokens = lex_make_toks(&lexer);
@@ -39,8 +36,7 @@ void expr2()
   node_binary_tree_delete(rt);
 }
 
-void expr3()
-{
+void expr3() {
   node_binary_t *rt = malloc(sizeof(node_binary_t));
   lexer_t lexer = lex_create_from_string("5-5/5-5");
   tok_list_t *tokens = lex_make_toks(&lexer);
@@ -53,8 +49,7 @@ void expr3()
   node_binary_tree_delete(rt);
 }
 
-void expr4()
-{
+void expr4() {
   node_binary_t *rt = malloc(sizeof(node_binary_t));
   lexer_t lexer = lex_create_from_string("0-(-2)");
   tok_list_t *tokens = lex_make_toks(&lexer);
@@ -67,8 +62,7 @@ void expr4()
   node_binary_tree_delete(rt);
 }
 
-void expr5()
-{
+void expr5() {
   node_binary_t *rt = malloc(sizeof(node_binary_t));
   lexer_t lexer = lex_create_from_string("1");
   tok_list_t *tokens = lex_make_toks(&lexer);
@@ -81,8 +75,7 @@ void expr5()
   node_binary_tree_delete(rt);
 }
 
-int main()
-{
+int main() {
   UNITY_BEGIN();
   RUN_TEST(expr1);
   RUN_TEST(expr2);

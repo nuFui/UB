@@ -1,8 +1,7 @@
 #include "../../include/common/error.h"
 
 // Raiser function. Exits with code 1.
-void error_raise(void (*error_func)(error_pos_t *, const char *, va_list), error_pos_t *pos, const char *fmt, ...)
-{
+void error_raise(void (*error_func)(error_pos_t *, const char *, va_list), error_pos_t *pos, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
   (*error_func)(pos, fmt, args);

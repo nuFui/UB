@@ -5,10 +5,10 @@
 
 typedef struct
 {
-  int index;        // Index of current with respect to text.
-  int line;         // Line number
-  int column;       // Column number
-  const char *file; // File name
+  int index;         // Index of current with respect to text.
+  int line;          // Line number
+  int column;        // Column number
+  const char *file;  // File name
 } lexer_pos_t;
 
 extern void lex_pos_advance(lexer_pos_t *lex_pos, char *cur);

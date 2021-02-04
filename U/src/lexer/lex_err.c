@@ -1,7 +1,6 @@
 #include "../../include/lexer/lex_err.h"
 
-void lex_err_print(lex_err_base_t *err, ...)
-{
+void lex_err_print(lex_err_base_t *err, ...) {
   va_list args;
   va_start(args, err);
   fprintf(stderr, "%s[err]: file: %s, line: %d, column: %d\n\terror: %s, message: ",
@@ -15,8 +14,7 @@ void lex_err_print(lex_err_base_t *err, ...)
   fprintf(stderr, ".%s\n", RESET);
 }
 
-void lex_err_vprint(lex_err_base_t *err, va_list details)
-{
+void lex_err_vprint(lex_err_base_t *err, va_list details) {
   fprintf(stderr, "%s[err]:  file: %s, line: %d, column: %d\n\terror: %s, message: ",
           RED,
           err->pos.file,
@@ -27,8 +25,7 @@ void lex_err_vprint(lex_err_base_t *err, va_list details)
   fprintf(stderr, ".%s\n", RESET);
 }
 
-void lex_err_raise(lex_err_base_t *err, lexer_t *lex, ...)
-{
+void lex_err_raise(lex_err_base_t *err, lexer_t *lex, ...) {
   va_list args;
   va_start(args, lex);
   lex_err_vprint(err, args);
@@ -38,12 +35,10 @@ void lex_err_raise(lex_err_base_t *err, lexer_t *lex, ...)
 }
 
 // NOTE: Does not delete src pointer if delete_src = 1.
-void lex_err_copy(lex_err_base_t *dest, lex_err_base_t *src, bool delete_src)
-{
+void lex_err_copy(lex_err_base_t *dest, lex_err_base_t *src, bool delete_src) {
   lex_pos_copy(&dest->pos, &src->pos);
   dest->details = strdup(src->details);
-  if (delete_src)
-  {
+  if (delete_src) {
     ufree((char *)src->name);
     ufree(src->details);
   }

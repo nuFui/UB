@@ -1,19 +1,19 @@
 #ifndef __LEXER_TOK_H__
 #define __LEXER_TOK_H__
 
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <stdbool.h>
 
 #include "../common/error.h"
 #include "../common/ualloc.h"
 
-typedef enum
-{
+typedef enum {
   TOK_TYPE_ASGN,
   TOK_TYPE_ADD,
   TOK_TYPE_SUB,
+  TOK_TYPE_MOD,
   TOK_TYPE_DIV,
   TOK_TYPE_MUL,
   TOK_TYPE_POW,

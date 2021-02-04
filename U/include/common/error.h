@@ -7,8 +7,7 @@
 
 #include "constants.h"
 
-typedef struct
-{
+typedef struct {
   const char *file;
   const char *function;
   int line;

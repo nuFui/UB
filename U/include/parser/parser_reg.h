@@ -23,8 +23,10 @@ struct ParserRegister {
 };
 
 // extern void parser_register_destroy(parser_register_t *reg);
-extern void parser_register_add(parser_register_t *reg, identifier_t *idf);
-extern void parser_register_remove(parser_register_t *reg, int idf_id);
-extern void parser_register_update(parser_register_t *reg, int idf_id, char *newvalue);
+extern void parser_register_add(parser_register_t **reg, identifier_t *idf);
+extern void parser_register_remove(parser_register_t **reg, int idf_id);
+extern void parser_register_update(parser_register_t **reg, int idf_id, char *newvalue);
+
+extern int parser_register_contains(parser_register_t **reg, const char *idf);
 
 #endif

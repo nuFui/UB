@@ -34,6 +34,15 @@ void parser_err_raise(parser_err_base_t *err, parser_t *par, ...) {
   exit(EXIT_FAILURE);
 }
 
+// Maybe?
+void parser_err_handle(int count, ...)  {
+  va_list args;
+  va_start(count, args);
+  for (int i = 0; i < count; ++i) {
+    va_arg(args, void)(va_arg(args, void*));
+  }
+}
+
 void parser_register_err_raise(parser_err_base_t *err, parser_register_t *reg, ...) {
   va_list args;
   va_start(args, reg);

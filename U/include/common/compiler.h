@@ -6,15 +6,13 @@
 #include "../lexer/lex.h"
 #include "../parser/parser_eval.h"
 
-void run(char *str, lexer_t (*func)(const char *str)) {
+void run(char *str, lexer_t (*func)(const char *str), parser_register_t **reg) {
   lexer_t lex = func(str);
   tok_list_t *list = lex_make_toks(&lex);
   parser_t par = parser_create(list);
-  parser_register_t reg;
-  reg.count = 0;
   node_binary_tree_root_init();
   node_binary_tree(0, par.tok_list->count, &par, *root);
-  eval_result_t k = node_binary_tree_eval(&reg, *root);
+  eval_result_t k = node_binary_tree_eval(reg, *root);
   if (k.code == EVAL_FAILURE) {
     printf("Failed to evaluate.\n");
     exit(EXIT_SUCCESS);
@@ -22,7 +20,7 @@ void run(char *str, lexer_t (*func)(const char *str)) {
   if (k.kind != TOK_TYPE_IDF) {
     printf("%s = %s\n", lex.text, k.result);
   } else {
-    identifier_t *s = reg.identifiers[reg.count - 1];
+    identifier_t *s = (*reg)->identifiers[(*reg)->count - 1];
     printf("%s = %s\n", s->name, s->value);
   }
   lex_destroy(&lex);
@@ -38,7 +36,7 @@ void toks(char *str, lexer_t (*func)(const char *str)) {
   lex_destroy(&lex);
 }
 
-void repl() {
+void repl(parser_register_t *reg) {
   printf("COMPILER Ulang\n");
   printf("Type stormout() or CTRL+C to exit\n");
   char *str = NULL;
@@ -57,7 +55,7 @@ void repl() {
       continue;
     }
     str[read - 1] = '\0';  // because newline is read
-    run(str, lex_create_from_string);
+    run(str, lex_create_from_string, &reg);
     free(str);
     str = NULL;
   } while (true);

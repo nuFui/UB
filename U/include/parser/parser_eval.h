@@ -11,6 +11,8 @@ typedef enum {
   EVAL_SUCCESS,
   EVAL_FAILURE,
   EVAL_DIVZERO,
+  EVAL_ASIGNED,
+  EVAL_REASIGNED,
 } eval_result_code_t;
 
 typedef struct
@@ -20,6 +22,6 @@ typedef struct
   char *result;             // Interpretation of result. actually int or float but sometimes merely str.
 } eval_result_t;
 
-extern eval_result_t node_binary_tree_eval(parser_register_t *par, node_binary_t *mov);
+extern eval_result_t node_binary_tree_eval(parser_register_t **reg, node_binary_t *mov);
 
 #endif

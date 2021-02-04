@@ -133,28 +133,63 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
 }
 
 // Evaluates binary tree from leaves up.
-eval_result_t node_binary_tree_eval(parser_register_t *reg, node_binary_t *mov) {
+eval_result_t node_binary_tree_eval(parser_register_t **reg, node_binary_t *mov) {
+  if (mov->op->type == TOK_TYPE_IDF) {
+    int rpos = parser_register_contains(reg, mov->op->value);
+    if (rpos != -1) {
+      eval_result_t idf_eval = {
+          (*reg)->identifiers[rpos]->type,
+          EVAL_SUCCESS,
+          (*reg)->identifiers[rpos]->value};
+      return idf_eval;
+    }
+    parser_err_base_t err = {
+        mov->op,
+        "InvalidSyntaxErr",
+        "Unknown identifier '%s'"};
+    node_binary_tree_root_deinit();
+    parser_register_err_raise(&err, *reg, mov->op->value);
+  }
+
   if (mov->op->type == TOK_TYPE_ASGN) {
     if (mov->left->op->type != TOK_TYPE_IDF) {
       parser_err_base_t err = {
           mov->left->op,
           "InvalidSyntaxErr",
           "Expected identifier name got '%s'"};
-      parser_register_err_raise(&err, reg, stringify_token_type(mov->left->op->type));
+      parser_register_err_raise(&err, *reg, stringify_token_type(mov->left->op->type));
     }
     error_pos_t pos = {__FILE__, __func__, __LINE__};
-    identifier_t *idf = ualloc(&pos, sizeof(identifier_t));
     eval_result_t res = node_binary_tree_eval(reg, mov->right);
     if (res.code != EVAL_SUCCESS) {
       node_binary_tree_root_deinit();
-      exit(EXIT_FAILURE);
+      error_pos_t pos = {__FILE__, __func__, __LINE__};
+      error_raise(error_fatal, &pos, "Got status %d of evaluation", (int)res.code);
     }
-    idf->type = res.kind;
-    idf->name = mov->left->op->value;
-    idf->value = res.result;
-    parser_register_add(reg, idf);  // must be referneced
-    eval_result_t asgn_ret = {TOK_TYPE_IDF, res.code, NULL};
-    return asgn_ret;
+    int rpos = parser_register_contains(reg, mov->left->op->value);
+    if (rpos == -1) {
+      identifier_t *idf = ualloc(&pos, sizeof(identifier_t));
+      // identifier is not in registry => register it.
+      idf->type = res.kind;
+      idf->name = strdup(mov->left->op->value);
+      idf->value = strdup(res.result);
+      parser_register_add(reg, idf);  // must be referneced
+      eval_result_t asgn_ret = {TOK_TYPE_IDF, EVAL_SUCCESS, NULL};
+      return asgn_ret;
+    }
+    /*
+    if (!strcmp(mov->left->op->value, (*reg)->identifiers[rpos]->name)) {
+      node_binary_tree_root_deinit();
+      parser_err_base_t err = {
+          mov->left->op,
+          "InvalidSyntaxErr",
+          "Expected self-reasignment not permitted"};
+      parser_register_err_raise(&err, *reg);
+    }
+    */
+    parser_register_update(reg, rpos, res.result);
+    eval_result_t reasgn_ret = {TOK_TYPE_IDF, EVAL_SUCCESS, NULL};
+    return reasgn_ret;
   }
   if (mov->op->type == TOK_TYPE_INT || mov->op->type == TOK_TYPE_FLT || mov->op->type == TOK_TYPE_STR) {
     eval_result_t ret = {
@@ -168,7 +203,8 @@ eval_result_t node_binary_tree_eval(parser_register_t *reg, node_binary_t *mov) 
   eval_result_t s = node_binary_eval(mov, left_subtree, right_subtree);
   if (s.code != EVAL_SUCCESS) {
     node_binary_tree_root_deinit();
-    exit(EXIT_FAILURE);
+    error_pos_t pos = {__FILE__, __func__, __LINE__};
+    error_raise(error_fatal, &pos, "Got status %d of evaluation", (int)s.code);
   }
   return s;
 }

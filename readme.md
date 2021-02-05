@@ -73,3 +73,15 @@ Operators: `+`, `-`, `*`, `/`, `^` (power), `%` (mod), `=`
 [type: 'multiply' line: 1 column: 10 file: <stdin> value: (null)]
 [type: 'integer literal' line: 1 column: 11 file: <stdin> value: 22]
 ```
+
+## TODOS
+
+### Current
+1. Documentation on variables.
+2. Coherent registry & type system.
+3. Optimization of copying and cleaning.
+4. Single error handling system. Use variadic arguments heavly.
+5. ...
+
+### Future
+1. ...

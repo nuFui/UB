@@ -6,6 +6,8 @@
 #include "../lexer/lex.h"
 #include "../parser/parser_eval.h"
 
+#define OUTPUT_VARIABLE_INFO 0
+
 void run(char *str, lexer_t (*func)(const char *str), parser_register_t **reg) {
   lexer_t lex = func(str);
   tok_list_t *list = lex_make_toks(&lex);
@@ -19,10 +21,13 @@ void run(char *str, lexer_t (*func)(const char *str), parser_register_t **reg) {
   }
   if (k.kind != TOK_TYPE_IDF) {
     printf("%s = %s\n", lex.text, k.result);
-  } else {
+  }
+#if OUTPUT_VARIABLE_INFO
+  else {
     identifier_t *s = (*reg)->identifiers[(*reg)->count - 1];
     printf("%s = %s\n", s->name, s->value);
   }
+#endif
   lex_destroy(&lex);
   parser_destroy(&par);
   node_binary_tree_root_deinit(root);
@@ -67,7 +72,7 @@ void help() {
   printf("\t\t<command> [run, toks, repl, help]\n");
   printf("\t\t\thelp => displays this message\n");
   printf("\t\t\trun => can only be followed by [-s, -f] (string or path to file which oughts to get run)\n");
-  printf("\t\t\ttoks => can only be followed by [-s, -f] (string or path to file from which tokens are extracted\n");
+  printf("\t\t\ttoks => can only be followed by [-s, -f] (string or path to file from which tokens are extracted)\n");
   printf("\t\t\trepl => followed by nothing\n");
 }
 

@@ -1,20 +1,5 @@
 #include "../../include/lexer/tok.h"
 
-tok_t tok_create(tok_type_t type, const char *value, const char *file) {
-  tok_t t;
-  t.type = type;
-  t.line = 1;
-  t.column = 1;
-  t.file = file;
-  t.value = strdup(value);
-  return t;
-}
-
-void tok_delete(tok_t *tok) {
-  ufree(tok->value);
-  tok->file = NULL;
-}
-
 const char *stringify_token_type(tok_type_t type) {
   switch (type) {
     case TOK_TYPE_ADD:
@@ -71,6 +56,21 @@ const char *symbolize_token_type(tok_type_t type) {
     default:
       return "unknown";
   }
+}
+
+tok_t tok_create(tok_type_t type, const char *value, const char *file) {
+  tok_t t;
+  t.type = type;
+  t.line = 1;
+  t.column = 1;
+  t.file = file;
+  t.value = strdup(value);
+  return t;
+}
+
+void tok_delete(tok_t *tok) {
+  ufree(tok->value);
+  tok->file = NULL;
 }
 
 void tok_print(tok_t *tok, bool newline, bool verbose, bool stringify) {

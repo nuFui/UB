@@ -35,6 +35,7 @@ void parser_err_raise(parser_err_base_t *err, parser_t *par, ...) {
 }
 
 // Maybe?
+/*
 void parser_err_handle(int count, ...)  {
   va_list args;
   va_start(count, args);
@@ -42,7 +43,7 @@ void parser_err_handle(int count, ...)  {
     va_arg(args, void)(va_arg(args, void*));
   }
 }
-
+*/
 void parser_register_err_raise(parser_err_base_t *err, parser_register_t *reg, ...) {
   va_list args;
   va_start(args, reg);

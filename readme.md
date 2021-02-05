@@ -74,6 +74,17 @@ Operators: `+`, `-`, `*`, `/`, `^` (power), `%` (mod), `=`
 [type: 'integer literal' line: 1 column: 11 file: <stdin> value: 22]
 ```
 
+#### Variables
+```
+> a = .4
+> a * a
+0.160000
+
+> k = "dandelion "
+> k * 2
+k * 2 = dandelion dandelion
+```
+
 ## TODOS
 
 ### Current

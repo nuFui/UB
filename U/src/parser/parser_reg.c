@@ -49,8 +49,9 @@ void parser_register_remove(parser_register_t **reg, int idf_id) {
 }
 
 void parser_register_update(parser_register_t **reg, int idf_id, char *newvalue) {
+  // Newvalue might get deleted => duplicate it.
   // ufree((*reg)->identifiers[bins_wrapped((*reg)->count, idf_id)]->value);
-  (*reg)->identifiers[bins_wrapped((*reg)->count, idf_id)]->value = newvalue;
+  (*reg)->identifiers[bins_wrapped((*reg)->count, idf_id)]->value = strdup(newvalue);
 }
 
 int parser_register_contains(parser_register_t **reg, const char *idf) {

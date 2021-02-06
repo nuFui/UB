@@ -10,9 +10,6 @@
 typedef enum {
   EVAL_SUCCESS,
   EVAL_FAILURE,
-  EVAL_DIVZERO,
-  EVAL_ASIGNED,
-  EVAL_REASIGNED,
 } eval_result_code_t;
 
 typedef struct

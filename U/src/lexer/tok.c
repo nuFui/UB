@@ -97,8 +97,7 @@ void tok_copy(tok_t *dest, tok_t *src, bool delete_src) {
   if (!dest->file || !dest->value) {
     tok_delete(dest);
     tok_delete(src);
-    error_pos_t pos = {__FILE__, __func__, __LINE__};
-    error_raise(&error_memory, &pos, "Could not allocate sufficient memory");
+    error_raise(&error_memory, &(error_pos_t){__FILE__, __func__, __LINE__}, "Could not allocate sufficient memory");
   }
   if (src->value) {
     dest->value = strdup(src->value);
@@ -118,8 +117,7 @@ void tok_list_print(tok_list_t *list, bool verbose, bool stringify) {
 void tok_list_copy(tok_list_t *dest, tok_list_t *src, bool delete_src) {
   dest->count = src->count;
   for (int i = 0; i < src->count; ++i) {
-    error_pos_t pos = {__FILE__, __func__, __LINE__};
-    dest->toks[i] = ualloc(&pos, sizeof(tok_t));
+    dest->toks[i] = ualloc(&ERROR_POSITION, sizeof(tok_t));
     tok_copy(dest->toks[i], src->toks[i], delete_src);
   }
   if (delete_src) {

@@ -8,16 +8,14 @@ void parser_register_destroy(parser_register_t *reg) {
 }
 
 void parser_register_add(parser_register_t **reg, identifier_t *idf) {
-  error_pos_t pos = {__FILE__, __func__, __LINE__};
-  *reg = urealloc(&pos, *reg, sizeof(parser_register_t) + ((*reg)->count + 1) * sizeof(identifier_t));
+  *reg = urealloc(&ERROR_POSITION, *reg, sizeof(parser_register_t) + ((*reg)->count + 1) * sizeof(identifier_t));
   idf->id = (*reg)->count;
   (*reg)->identifiers[(*reg)->count++] = idf;
 }
 
 static int bins_wrapped(int to, int idf_id) {
   if (idf_id > to) {
-    error_pos_t pos = {__FILE__, __func__, __LINE__};
-    error_raise(error_fatal, &pos, "Attempted to delete inexistent registry entry");
+    error_raise(error_fatal, &ERROR_POSITION, "Attempted to delete inexistent registry entry");
   }
   int lo = 0;
   int hi = to;
@@ -34,15 +32,13 @@ static int bins_wrapped(int to, int idf_id) {
     }
   }
   if (found_at == -1) {
-    error_pos_t pos = {__FILE__, __func__, __LINE__};
-    error_raise(error_fatal, &pos, "Attempted to delete inexistent registry entry");
+    error_raise(error_fatal, &ERROR_POSITION, "Attempted to delete inexistent registry entry");
   }
   return found_at;
 }
 
 void parser_register_remove(parser_register_t **reg, int idf_id) {
   int found_at = bins_wrapped((*reg)->count, idf_id);
-  error_pos_t pos = {__FILE__, __func__, __LINE__};
   memmove((*reg)->identifiers + found_at,
           (*reg)->identifiers + found_at + 1,
           (--((*reg)->count) - found_at) * sizeof(identifier_t));  // shifts elements after found_at back by 1.

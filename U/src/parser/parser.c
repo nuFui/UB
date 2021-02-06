@@ -20,10 +20,9 @@ static void check_tokens(parser_t *par) {
           case TOK_TYPE_POW:
           case TOK_TYPE_RPAR:
           case TOK_TYPE_EOF:;
-            parser_err_invalid_syntax eeis = {{par->tok_list->toks[i],
-                                               "ErrInvalidSyntax",
-                                               "Found '%s' after '%s', expected '(', literal or identifier"}};
-            parser_err_raise(&eeis.base,
+            parser_err_raise(&(parser_err_base_t){par->tok_list->toks[i],
+                                                  "ErrInvalidSyntax",
+                                                  "Found '%s' after '%s', expected '(', literal or identifier"},
                              par,
                              symbolize_token_type(par->tok_list->toks[i + 1]->type),
                              symbolize_token_type(par->tok_list->toks[i]->type));
@@ -38,19 +37,17 @@ static void check_tokens(parser_t *par) {
           case TOK_TYPE_FLT:
           case TOK_TYPE_STR:
           case TOK_TYPE_IDF:;
-            parser_err_invalid_syntax peis = {{par->tok_list->toks[i + 1],
-                                               "ErrInvalidSyntax",
-                                               "Found '%s' after '%s', expected ')', operator or eof"}};
-            parser_err_raise(&peis.base,
+            parser_err_raise(&(parser_err_base_t){par->tok_list->toks[i + 1],
+                                                  "ErrInvalidSyntax",
+                                                  "Found '%s' after '%s', expected ')', operator or eof"},
                              par,
                              par->tok_list->toks[i + 1]->value,
                              par->tok_list->toks[i]->value);
             break;
           case TOK_TYPE_LPAR:;
-            parser_err_invalid_syntax eeis = {{par->tok_list->toks[i + 1],
-                                               "ErrInvalidSyntax",
-                                               "Found '%s' after '%s', expected ')', operator or eof"}};
-            parser_err_raise(&eeis.base,
+            parser_err_raise(&(parser_err_base_t){par->tok_list->toks[i + 1],
+                                                  "ErrInvalidSyntax",
+                                                  "Found '%s' after '%s', expected ')', operator or eof"},
                              par,
                              symbolize_token_type(par->tok_list->toks[i + 1]->type),
                              par->tok_list->toks[i]->value);
@@ -62,10 +59,9 @@ static void check_tokens(parser_t *par) {
           case TOK_TYPE_DIV:
           case TOK_TYPE_MOD:
           case TOK_TYPE_POW:;
-            parser_err_invalid_syntax peis = {{par->tok_list->toks[i + 1],
-                                               "ErrInvalidSyntax",
-                                               "Found '%s' after '%s', expected ')', literal or identifier"}};
-            parser_err_raise(&peis.base,
+            parser_err_raise(&(parser_err_base_t){par->tok_list->toks[i + 1],
+                                                  "ErrInvalidSyntax",
+                                                  "Found '%s' after '%s', expected ')', literal or identifier"},
                              par,
                              symbolize_token_type(par->tok_list->toks[i + 1]->type),
                              symbolize_token_type(par->tok_list->toks[i]->type));
@@ -74,10 +70,9 @@ static void check_tokens(parser_t *par) {
       case TOK_TYPE_RPAR:
         switch (par->tok_list->toks[i + 1]->type) {
           case TOK_TYPE_LPAR:;
-            parser_err_invalid_syntax eeis = {{par->tok_list->toks[i + 1],
-                                               "ErrInvalidSyntax",
-                                               "Found '%s' after '%s', expected operator, ')' or eof"}};
-            parser_err_raise(&eeis.base,
+            parser_err_raise(&(parser_err_base_t){par->tok_list->toks[i + 1],
+                                                  "ErrInvalidSyntax",
+                                                  "Found '%s' after '%s', expected operator, ')' or eof"},
                              par,
                              symbolize_token_type(par->tok_list->toks[i + 1]->type),
                              symbolize_token_type(par->tok_list->toks[i]->type));
@@ -85,10 +80,9 @@ static void check_tokens(parser_t *par) {
           case TOK_TYPE_FLT:
           case TOK_TYPE_STR:
           case TOK_TYPE_IDF:;
-            parser_err_invalid_syntax peis = {{par->tok_list->toks[i + 1],
-                                               "ErrInvalidSyntax",
-                                               "Found '%s' after '%s', expected operator, ')' or eof"}};
-            parser_err_raise(&peis.base,
+            parser_err_raise(&(parser_err_base_t){par->tok_list->toks[i + 1],
+                                                  "ErrInvalidSyntax",
+                                                  "Found '%s' after '%s', expected operator, ')' or eof"},
                              par,
                              par->tok_list->toks[i + 1]->value,
                              symbolize_token_type(par->tok_list->toks[i]->type));

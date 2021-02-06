@@ -4,9 +4,8 @@ node_binary_t **root = NULL;
 static int scope = 0;
 
 void node_binary_tree_root_init() {
-  error_pos_t pos = {__FILE__, __func__, __LINE__};
-  root = ualloc(&pos, sizeof(node_binary_t *));
-  *root = ualloc(&pos, sizeof(node_binary_t));
+  root = ualloc(&ERROR_POSITION, sizeof(node_binary_t *));
+  *root = ualloc(&ERROR_POSITION, sizeof(node_binary_t));
 }
 
 void node_binary_tree_root_deinit() {
@@ -69,8 +68,7 @@ void node_binary_tree(int from, int to, parser_t *par, node_binary_t *mov) {
   if (to == from) {
     // Unary minus or plus => insert '0' to the left.
     if (par->tok_list->toks[from]->type == TOK_TYPE_SUB || par->tok_list->toks[from]->type == TOK_TYPE_ADD) {
-      error_pos_t pos = {__FILE__, __func__, __LINE__};
-      mov->op = ualloc(&pos, sizeof(tok_t));
+      mov->op = ualloc(&ERROR_POSITION, sizeof(tok_t));
       mov->op->type = TOK_TYPE_INT;
       mov->op->line = -1;
       mov->op->column = -1;
@@ -92,10 +90,9 @@ void node_binary_tree(int from, int to, parser_t *par, node_binary_t *mov) {
 
   int i = find_next_op(par, from, to);
   if (i != -1) {
-    error_pos_t pos = {__FILE__, __func__, __LINE__};
     mov->op = par->tok_list->toks[i];
-    mov->left = ualloc(&pos, sizeof(node_binary_t));
-    mov->right = ualloc(&pos, sizeof(node_binary_t));
+    mov->left = ualloc(&ERROR_POSITION, sizeof(node_binary_t));
+    mov->right = ualloc(&ERROR_POSITION, sizeof(node_binary_t));
     node_binary_tree(from, i, par, mov->left);
     node_binary_tree(i + 1, to, par, mov->right);
     return;
@@ -106,6 +103,9 @@ void node_binary_tree(int from, int to, parser_t *par, node_binary_t *mov) {
     node_binary_tree(from + 1, to - 1, par, mov);
     --scope;
     return;
+  } else if (par->tok_list->toks[from]->type != TOK_TYPE_LPAR || par->tok_list->toks[to - 1]->type != TOK_TYPE_RPAR) {
+    node_binary_tree_root_deinit();
+    exit(EXIT_FAILURE);
   }
 }
 

@@ -193,12 +193,10 @@ void lex_advance(lexer_t *lex) {
 // Given lexer creates the list of tokens for lex->file.
 // Can raise error if heap-allocation fails.
 tok_list_t *lex_make_toks(lexer_t *lex) {
-  error_pos_t pos = {__FILE__, __func__, __LINE__};
-  tok_list_t *list = ualloc(&pos, 0);
+  tok_list_t *list = ualloc(&ERROR_POSITION, 0);
   list->count = 0;
   while (lex->cur) {
-    error_pos_t pos = {__FILE__, __func__, __LINE__};
-    list = urealloc(&pos, list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
+    list = urealloc(&ERROR_POSITION, list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
     list->toks[list->count] = lex_make_tok(lex);
     if (!list->toks[list->count]) {
       ufree(list->toks[list->count]);
@@ -208,8 +206,8 @@ tok_list_t *lex_make_toks(lexer_t *lex) {
     ++list->count;
   }
 #if APPEND_EOF
-  list = urealloc(&pos, list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
-  list->toks[list->count] = ualloc(&pos, sizeof(tok_t));
+  list = urealloc(&ERROR_POSITION, list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
+  list->toks[list->count] = ualloc(&ERROR_POSITION, sizeof(tok_t));
   list->toks[list->count]->type = TOK_TYPE_EOF;
 #if COUNT_EOF && APPEND_EOF
   ++list->count;

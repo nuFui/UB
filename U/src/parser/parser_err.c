@@ -54,8 +54,7 @@ void parser_register_err_raise(parser_err_base_t *err, parser_register_t *reg, .
 }
 
 void parser_err_copy(parser_err_base_t *dest, parser_err_base_t *src, bool delete_src) {
-  error_pos_t pos = {__FILE__, __func__, __LINE__};
-  dest->t = ualloc(&pos, sizeof(tok_t));
+  dest->t = ualloc(&ERROR_POSITION, sizeof(tok_t));
   tok_copy(dest->t, src->t, true);
   dest->details = strdup(src->details);
   if (delete_src) {

@@ -27,4 +27,7 @@ extern void error_raise(void (*error_func)(error_pos_t *, const char *,
 extern void error_memory(error_pos_t *pos, const char *fmt, va_list details);
 extern void error_fatal(error_pos_t *pos, const char *fmt, va_list details);
 
+#define ERROR_POSITION \
+  (error_pos_t) { __FILE__, __func__, __LINE__ }
+
 #endif

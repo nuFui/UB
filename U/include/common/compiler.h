@@ -5,7 +5,6 @@
 
 #include "../lexer/lex.h"
 #include "../parser/parser_eval.h"
-
 #include "time.h"
 
 #define OUTPUT_VARIABLE_INFO 0
@@ -61,8 +60,10 @@ void repl(parser_register_t *reg) {
       printf("nil\n");
       continue;
     }
-    str[read - 1] = '\0';  // because newline is read
-    run(str, lex_create_from_string, &reg);
+    if (read > 0) {
+      str[read - 1] = '\0';  // because newline is read
+      run(str, lex_create_from_string, &reg);
+    }
     free(str);
     str = NULL;
   } while (true);
@@ -72,7 +73,7 @@ void help() {
   printf("U compiler navigation\n");
   printf("\tU/bin/U <command> <option> <src>\n");
   printf("\t\t<command> [run, toks, repl, help]\n");
-  printf("\t\t\thelp => displays this message\n");
+  printf("\t\t\thelp => this message\n");
   printf("\t\t\trun => can only be followed by [-s, -f] (string or path to file which oughts to get run)\n");
   printf("\t\t\ttoks => can only be followed by [-s, -f] (string or path to file from which tokens are extracted)\n");
   printf("\t\t\trepl => followed by nothing\n");

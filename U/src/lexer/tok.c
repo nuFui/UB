@@ -12,6 +12,8 @@ const char *stringify_token_type(tok_type_t type) {
       return "divide";
     case TOK_TYPE_POW:
       return "exponentiate";
+    case TOK_TYPE_MOD:
+      return "modulate";
     case TOK_TYPE_LPAR:
       return "left parentheses";
     case TOK_TYPE_RPAR:
@@ -97,7 +99,7 @@ void tok_copy(tok_t *dest, tok_t *src, bool delete_src) {
   if (!dest->file || !dest->value) {
     tok_delete(dest);
     tok_delete(src);
-    error_raise(&error_memory, &(error_pos_t){__FILE__, __func__, __LINE__}, "Could not allocate sufficient memory");
+    error_raise(&error_memory, &ERROR_POSITION, "Could not allocate sufficient memory");
   }
   if (src->value) {
     dest->value = strdup(src->value);

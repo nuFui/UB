@@ -153,7 +153,7 @@ lexer_t lex_create(const char *path) {
   lex.pos.index = -1;
   lex.pos.column = -1;
   lex.pos.line = 1;
-  lex.pos.file = path;  // Not obtained through malloc() => dont free the file name buffer.
+  lex.pos.file = path; // do not free
   lex_helper_read_file(path, &lex.text, &lex.size);
   lex.cur = lex.text;
   lex_advance(&lex);
@@ -166,7 +166,7 @@ lexer_t lex_create_from_string(const char *str) {
   lex.pos.column = -1;
   lex.pos.line = 1;
   lex.text = strdup(str);
-  lex.pos.file = "<stdin>";  // Do not free(), string literal handled by compiler.
+  lex.pos.file = "|stdin|"; // do not free
   lex.size = strlen(lex.text);
   lex.cur = lex.text;
   lex_advance(&lex);
@@ -187,8 +187,10 @@ void lex_advance(lexer_t *lex) {
   }
 }
 
+/*
 #define APPEND_EOF 1
 #define COUNT_EOF 0
+*/
 
 // Given lexer creates the list of tokens for lex->file.
 // Can raise error if heap-allocation fails.
@@ -205,13 +207,13 @@ tok_list_t *lex_make_toks(lexer_t *lex) {
     list->toks[list->count]->file = lex->pos.file;
     ++list->count;
   }
-#if APPEND_EOF
+  // #if APPEND_EOF
   list = urealloc(&ERROR_POSITION, list, sizeof(tok_list_t) + (list->count + 1) * sizeof(tok_t *));
   list->toks[list->count] = ualloc(&ERROR_POSITION, sizeof(tok_t));
   list->toks[list->count]->type = TOK_TYPE_EOF;
-#if COUNT_EOF && APPEND_EOF
+  /*#if COUNT_EOF && APPEND_EOF
   ++list->count;
 #endif
-#endif
+#endif*/
   return list;
 }

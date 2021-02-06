@@ -6,6 +6,8 @@
 #include "../lexer/lex.h"
 #include "../parser/parser_eval.h"
 
+#include "time.h"
+
 #define OUTPUT_VARIABLE_INFO 0
 
 void run(char *str, lexer_t (*func)(const char *str), parser_register_t **reg) {
@@ -42,8 +44,8 @@ void toks(char *str, lexer_t (*func)(const char *str)) {
 }
 
 void repl(parser_register_t *reg) {
-  printf("COMPILER Ulang\n");
-  printf("Type stormout() or CTRL+C to exit\n");
+  struct tm *tinf = localtime(&(time_t){time(NULL)});
+  printf("Ulang - %d\nType stormout() or CTRL+C to exit\n", tinf->tm_year + 1900);
   char *str = NULL;
   ssize_t len = 0;
   int read = 0;

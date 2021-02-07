@@ -6,7 +6,7 @@ void ufree(void *ptr) {
 }
 
 void *ualloc(error_pos_t *pos, int size) {
-  void *block = NULL;
+  void *block;
   if (!(block = malloc(size))) {
     error_raise(error_memory, pos, "Could not allocate sufficient memory of %d bytes", size);
     exit(EXIT_FAILURE);
@@ -15,7 +15,7 @@ void *ualloc(error_pos_t *pos, int size) {
 }
 
 void *urealloc(error_pos_t *pos, void *origin, int newsize) {
-  void *neworigin = NULL;
+  void *neworigin;
   if (!(neworigin = realloc(origin, newsize))) {
     error_raise(error_memory, pos, "Could not reallocate memory to %d bytes", newsize);
     exit(EXIT_FAILURE);

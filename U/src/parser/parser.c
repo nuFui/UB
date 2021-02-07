@@ -110,20 +110,13 @@ static void check_tokens(parser_t *par) {
 }
 
 parser_t parser_create(tok_list_t *list) {
-  parser_t par;
-  par.tok_index = 0;
-  par.tok_list = list;
-  par.tok_cur = list->toks[par.tok_index];
+  parser_t par = {0, list->toks[0], list};
   check_tokens(&par);
   return par;
 }
 
 // Clears current token and token list of parser.
 void parser_destroy(parser_t *par) {
-  /* Noneed beacause the list destroys the current token.
-  tok_delete(par->tok_cur);
-  par->tok_cur = NULL;
-  */
   tok_list_delete(par->tok_list);
   par->tok_list = NULL;
 }

@@ -61,13 +61,7 @@ const char *symbolize_token_type(tok_type_t type) {
 }
 
 tok_t tok_create(tok_type_t type, const char *value, const char *file) {
-  tok_t t;
-  t.type = type;
-  t.line = 1;
-  t.column = 1;
-  t.file = file;
-  t.value = strdup(value);
-  return t;
+  return (tok_t){type, 1, 1, file, strdup(value)};
 }
 
 void tok_delete(tok_t *tok) {

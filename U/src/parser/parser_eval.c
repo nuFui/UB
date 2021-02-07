@@ -35,7 +35,7 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
           res.result[newlen] = '\0';
         } else {
           res.result = ualloc(&ERROR_POSITION, MAX_DIGITS);
-          float sum = atof(left.result) + atof(right.result);
+          double sum = atof(left.result) + atof(right.result);
           if (res.kind == TOK_TYPE_FLT) {
             snprintf(res.result, MAX_DIGITS, "%f", sum);
           } else {
@@ -49,7 +49,7 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
         break;
       case TOK_TYPE_SUB:
         res.result = ualloc(&ERROR_POSITION, MAX_DIGITS);
-        float sb = atof(left.result) - atof(right.result);
+        double sb = atof(left.result) - atof(right.result);
         if (res.kind == TOK_TYPE_FLT) {
           snprintf(res.result, MAX_DIGITS, "%f", sb);
         } else {
@@ -73,7 +73,7 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
           res.result[newlen] = '\0';
         } else {
           res.result = ualloc(&ERROR_POSITION, MAX_DIGITS);
-          float ml = atof(left.result) * atof(right.result);
+          double ml = atof(left.result) * atof(right.result);
           if (res.kind == TOK_TYPE_FLT) {
             snprintf(res.result, MAX_DIGITS, "%f", ml);
           } else {
@@ -91,33 +91,19 @@ static eval_result_t node_binary_eval(node_binary_t *node, eval_result_t left, e
           return res;
         }
         res.result = ualloc(&ERROR_POSITION, MAX_DIGITS);
-        float dv = atof(left.result) / atof(right.result);
-        if (res.kind == TOK_TYPE_FLT) {
-          snprintf(res.result, MAX_DIGITS, "%f", dv);
-        } else {
-          if (LLONG_MAX < dv) {
-            strcat(res.result, "inf");
-            break;
-          }
-          snprintf(res.result, MAX_DIGITS, "%lld", (long long)dv);
-        }
+        double dv = atof(left.result) / atof(right.result);
+        res.kind = TOK_TYPE_FLT;  // force flt on division.
+        snprintf(res.result, MAX_DIGITS, "%f", dv);
         break;
       case TOK_TYPE_POW:
         res.result = ualloc(&ERROR_POSITION, MAX_DIGITS);
-        float pw = pow(atof(left.result), atof(right.result));
-        if (res.kind == TOK_TYPE_FLT) {
-          snprintf(res.result, MAX_DIGITS, "%f", pw);
-        } else {
-          if (LLONG_MAX < pw) {
-            strcat(res.result, "inf");
-            break;
-          }
-          snprintf(res.result, MAX_DIGITS, "%lld", (long long)pw);
-        }
+        double pw = pow(atof(left.result), atof(right.result));
+        res.kind = TOK_TYPE_FLT;  // force flt on power operation.
+        snprintf(res.result, MAX_DIGITS, "%f", pw);
         break;
       case TOK_TYPE_MOD:
         res.result = ualloc(&ERROR_POSITION, MAX_DIGITS);
-        float mod = fmod(atof(left.result), atof(right.result));
+        double mod = fmod(atof(left.result), atof(right.result));
         if (res.kind == TOK_TYPE_FLT) {
           snprintf(res.result, MAX_DIGITS, "%f", mod);
         } else {
@@ -167,7 +153,6 @@ eval_result_t node_binary_tree_eval(parser_register_t **reg, node_binary_t *mov)
     int rpos = parser_register_contains(reg, mov->left->op->value);
     if (rpos == -1) {
       identifier_t *idf = ualloc(&ERROR_POSITION, sizeof(identifier_t));
-      // identifier is not in registry => register it.
       idf->type = res.kind;
       idf->name = strdup(mov->left->op->value);
       idf->value = strdup(res.result);
@@ -186,6 +171,7 @@ eval_result_t node_binary_tree_eval(parser_register_t **reg, node_binary_t *mov)
         mov->op->value};
     return ret;
   }
+  // Leave uncomposited for debug
   eval_result_t left_subtree = node_binary_tree_eval(reg, mov->left);
   eval_result_t right_subtree = node_binary_tree_eval(reg, mov->right);
   eval_result_t s = node_binary_eval(mov, left_subtree, right_subtree);

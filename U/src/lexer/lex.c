@@ -27,8 +27,7 @@ static void lex_make_number(lexer_t *lex, tok_t *tok) {
     ++size;
     lex_advance(lex);
   }
-  error_pos_t pos = {__FILE__, __func__, __LINE__};
-  tok->value = ualloc(&pos, sizeof(char) * size);
+  tok->value = ualloc(&ERROR_POSITION, size);
   strncpy(tok->value, f, size);
   tok->value[size] = '\0';
   tok->type = dot_count ? TOK_TYPE_FLT : TOK_TYPE_INT;
@@ -41,8 +40,7 @@ static void lex_make_string(lexer_t *lex, tok_t *tok) {
     ++size;
     lex_advance(lex);
   }
-  error_pos_t pos = {__FILE__, __func__, __LINE__};
-  tok->value = ualloc(&pos, size);
+  tok->value = ualloc(&ERROR_POSITION, size);
   strncpy(tok->value, f, size);
   tok->value[size] = '\0';
   tok->type = TOK_TYPE_STR;
@@ -64,8 +62,7 @@ static void lex_make_identifier(lexer_t *lex, tok_t *tok) {
 
 // Creates token given lexer, can raise error if illegal character was found.
 static tok_t *lex_make_tok(lexer_t *lex) {
-  error_pos_t pos = {__FILE__, __func__, __LINE__};
-  tok_t *tok = ualloc(&pos, sizeof(tok_t));
+  tok_t *tok = ualloc(&ERROR_POSITION, sizeof(tok_t));
   tok->type = -1;
   tok->line = lex->pos.line;
   tok->column = lex->pos.column;

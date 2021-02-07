@@ -34,8 +34,8 @@ static int find_next_op(parser_t *par, int from, int to) {
       case TOK_TYPE_MOD:
       case TOK_TYPE_ASGN:
         if (scp == scope) {
-          // If minus, find rightmost one.
-          if (par->tok_list->toks[from]->type <= smallest && smallest == TOK_TYPE_SUB) {
+          // If minus or div, find rightmost one. (order matters, agh).
+          if (par->tok_list->toks[from]->type <= smallest && (smallest == TOK_TYPE_SUB || smallest == TOK_TYPE_DIV)) {
             smallest = par->tok_list->toks[from]->type;
             smallest_index = from;
           } else if (par->tok_list->toks[from]->type < smallest) {
@@ -43,8 +43,6 @@ static int find_next_op(parser_t *par, int from, int to) {
             smallest_index = from;
           }
         }
-        break;
-      default:
         break;
     }
     ++from;

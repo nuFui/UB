@@ -75,6 +75,7 @@ Operators: `+`, `-`, `*`, `/`, `^` (power), `%` (mod), `=`
 ```
 
 #### Variables
+Asignment
 ```
 > a = .4
 > a * a
@@ -83,6 +84,16 @@ Operators: `+`, `-`, `*`, `/`, `^` (power), `%` (mod), `=`
 > k = "dandelion "
 > k * 2
 k * 2 = dandelion dandelion
+```
+
+Reasignment
+```
+> a = 100
+> a
+100
+> a = 200
+> a
+200
 ```
 
 ## TODOS

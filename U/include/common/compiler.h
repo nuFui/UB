@@ -8,27 +8,47 @@
 #include "time.h"
 
 #define OUTPUT_VARIABLE_INFO 0
+#define TIME_EXECUTION 1
 
 void run(char *str, lexer_t (*func)(const char *str), parser_register_t **reg) {
+#if TIME_EXECUTION
+  clock_t c = clock();
+#endif
   lexer_t lex = func(str);
   tok_list_t *list = lex_make_toks(&lex);
+  if (list->toks[0]->type == TOK_TYPE_EOF) {
+    lex_destroy(&lex);
+    printf("no\n");
+#if TIME_EXECTION
+    clock_t cend = clock();
+    printf("time: %f sec\n", (double)(cend - c) / CLOCKS_PER_SEC);
+#endif
+    return;
+  }
   parser_t par = parser_create(list);
   node_binary_tree_root_init();
   node_binary_tree(0, par.tok_list->count, &par, *root);
   eval_result_t k = node_binary_tree_eval(reg, *root);
   if (k.code == EVAL_FAILURE) {
-    printf("Failed to evaluate.\n");
+    fprintf(stderr, "Failed to evaluate.\n");
     exit(EXIT_SUCCESS);
   }
   if (k.kind != TOK_TYPE_IDF) {
     printf("%s = %s\n", lex.text, k.result);
-  }
+#if TIME_EXECUTION
+    clock_t cend = clock();
+    printf("time: %f sec\n", (double)(cend - c) / CLOCKS_PER_SEC);
+#endif
+  } else {
 #if OUTPUT_VARIABLE_INFO
-  else {
     identifier_t *s = (*reg)->identifiers[(*reg)->count - 1];
     printf("%s = %s\n", s->name, s->value);
-  }
 #endif
+#if TIME_EXECUTION
+    clock_t cend = clock();
+    printf("time: %f sec\n", (double)(cend - c) / CLOCKS_PER_SEC);
+#endif
+  }
   lex_destroy(&lex);
   parser_destroy(&par);
   node_binary_tree_root_deinit(root);
@@ -56,10 +76,12 @@ void repl(parser_register_t *reg) {
       str = NULL;
       break;
     }
+    /*
     if (!strcmp("\n", str)) {
       printf("nil\n");
       continue;
     }
+    */
     if (read > 0) {
       str[read - 1] = '\0';  // because newline is read
       run(str, lex_create_from_string, &reg);

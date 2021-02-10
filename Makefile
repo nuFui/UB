@@ -7,6 +7,9 @@ export UROOT = $(shell pwd)
 export UBUILD = $(UROOT)/U/build
 export UBIN = $(UROOT)/U/bin
 
+_ :=   $(shell mkdir -p $(UBUILD))
+_ :=  $(shell mkdir -p $(UBIN))
+
 SOURCES := $(shell find $(UROOT)/U/src -name *.c)
 OBJECTS = $(addprefix $(UBUILD)/,$(notdir $(SOURCES:%.c=%.o)))
 BINARY = $(UBIN)/U
